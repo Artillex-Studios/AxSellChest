@@ -1,6 +1,7 @@
 package com.artillexstudios.axsellchest.chests;
 
 import com.artillexstudios.axsellchest.AxSellChestPlugin;
+import com.artillexstudios.axsellchest.data.DataHandler;
 import com.artillexstudios.axsellchest.utils.FileUtils;
 import org.bukkit.World;
 import org.slf4j.Logger;
@@ -58,6 +59,8 @@ public class ChestTypes {
 
             if (removedTypes.contains(chest.getType())) {
                 chest.remove();
+            } else {
+                chest.onReload();
             }
         }
     }
@@ -79,6 +82,9 @@ public class ChestTypes {
         }
 
         TYPES.put(chestType.getName(), chestType);
+        DataHandler.QUEUE.submit(() -> {
+            AxSellChestPlugin.getInstance().getDataHandler().insertType(chestType);
+        });
     }
 
     public static Map<String, ChestType> getTypes() {

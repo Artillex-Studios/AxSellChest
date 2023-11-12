@@ -7,8 +7,8 @@ import org.bukkit.entity.Player;
 
 public class ActionSendMessage extends Action {
 
-    public ActionSendMessage(String id) {
-        super(id);
+    public ActionSendMessage() {
+        super("message");
     }
 
     @Override

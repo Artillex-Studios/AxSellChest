@@ -31,9 +31,11 @@ public class ChestType {
         return name;
     }
 
-    public ItemStack getItem() {
+    public ItemStack getItem(long itemsSold, double moneyMade) {
         return new ItemBuilder(config.ITEM_SECTION)
                 .storePersistentData(Keys.CHEST_TYPE, PersistentDataType.STRING, this.getName())
+                .storePersistentData(Keys.ITEMS_SOLD, PersistentDataType.LONG, itemsSold)
+                .storePersistentData(Keys.MONEY_MADE, PersistentDataType.DOUBLE, moneyMade)
                 .get();
     }
 

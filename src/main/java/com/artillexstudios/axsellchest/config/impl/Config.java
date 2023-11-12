@@ -9,19 +9,36 @@ public class Config extends AbstractConfig {
     @Comment("""
             Can be RoseStacker, WildStacker, or default
             """)
-    private static final String STACKER_INTEGRATION = "RoseStacker";
+    private static String STACKER_INTEGRATION = "RoseStacker";
 
     @Key("integrations.economy")
     @Comment("""
             Can be Vault
             """)
-    private static final String ECONOMY_INTEGRATION = "Vault";
+    private static String ECONOMY_INTEGRATION = "Vault";
 
     @Key("integrations.prices")
     @Comment("""
             Can be ShopGUIPlus or local
             """)
-    private static final String PRICES_INTEGRATION = "ShopGUIPlus";
+    private static String PRICES_INTEGRATION = "ShopGUIPlus";
+
+    @Key("autosave-minutes")
+    @Comment("""
+            How often should we save data about chests?
+            Note: this is only data like money made, items sold. Other changes are saved immediately.
+            """)
+    public static int AUTOSAVE_MINUTES = 1;
+
+    @Key("default-chest-limit")
+    @Comment("""
+            This can be overwritten per player by giving them the
+            axsellchest.limit.<amount> permission.
+            """)
+    public static int DEFAULT_CHEST_LIMIT = 10;
+
+    @Key("place-in-inventory")
+    public static boolean PLACE_IN_INVENTORY = true;
 
     private static final Config CONFIG = new Config();
 

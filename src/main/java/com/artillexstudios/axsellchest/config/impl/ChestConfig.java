@@ -43,6 +43,9 @@ public class ChestConfig extends AbstractConfig {
     public boolean INSTANT_COLLECT = true;
     @Key("options.charge")
     public boolean CHARGE = true;
+    @Key("options.max-charge")
+    @Comment("In hours")
+    public int MAX_CHARGE = 24;
     @Key("inventory.title")
     public String INVENTORY_TITLE = "<green><owner>'s</green> <white>default sellchest";
     @Key("inventory.size")

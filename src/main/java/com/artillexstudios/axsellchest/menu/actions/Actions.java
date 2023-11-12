@@ -1,6 +1,12 @@
 package com.artillexstudios.axsellchest.menu.actions;
 
 import com.artillexstudios.axsellchest.chests.Chest;
+import com.artillexstudios.axsellchest.menu.actions.impl.ActionCharge;
+import com.artillexstudios.axsellchest.menu.actions.impl.ActionCloseMenu;
+import com.artillexstudios.axsellchest.menu.actions.impl.ActionConsoleCommand;
+import com.artillexstudios.axsellchest.menu.actions.impl.ActionPlayerCommand;
+import com.artillexstudios.axsellchest.menu.actions.impl.ActionSendMessage;
+import com.artillexstudios.axsellchest.menu.actions.impl.ActionToggle;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.entity.Player;
 
@@ -10,6 +16,13 @@ import java.util.Locale;
 
 public class Actions {
     private static final HashMap<String, Action> ACTIONS = new HashMap<>();
+
+    private static final Action CHARGE = register(new ActionCharge());
+    private static final Action CLOSE_MENU = register(new ActionCloseMenu());
+    private static final Action CONSOLE_COMMAND = register(new ActionConsoleCommand());
+    private static final Action PLAYER_COMMAND = register(new ActionPlayerCommand());
+    private static final Action SEND_MESSAGE = register(new ActionSendMessage());
+    private static final Action TOGGLE = register(new ActionToggle());
 
     public static Action register(Action action) {
         ACTIONS.put(action.getId(), action);

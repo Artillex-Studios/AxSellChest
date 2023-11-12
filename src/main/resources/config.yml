@@ -1,6 +1,5 @@
 place-in-inventory: true
 
-integrations:
-  stacker: "RoseStacker"
-  economy: "Vault"
-  prices: "ShopGUIPlus"
+sell-messages:
+  # In seconds
+  interval: 60

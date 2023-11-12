@@ -2,6 +2,7 @@ package com.artillexstudios.axsellchest.menu;
 
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axsellchest.chests.Chest;
+import com.artillexstudios.axsellchest.config.impl.Messages;
 import com.artillexstudios.axsellchest.menu.actions.Actions;
 import com.artillexstudios.axsellchest.menu.prices.Prices;
 import com.artillexstudios.axsellchest.utils.ItemBuilder;
@@ -32,13 +33,18 @@ public class Menu {
 
         gui.setDefaultClickAction(event -> event.setCancelled(true));
 
+        updateGui();
+    }
+
+    private void updateGui() {
         for (Map<Object, Object> inventoryItem : chest.getType().getConfig().INVENTORY_ITEMS) {
-            ItemStack itemStack = new ItemBuilder(inventoryItem).get();
+            ItemStack itemStack = new ItemBuilder(inventoryItem, Placeholder.unparsed("owner", chest.getOwnerName()), Placeholder.parsed("bank", chest.isBank() ? Messages.TOGGLE_ON : Messages.TOGGLE_OFF), Placeholder.unparsed("autosell", chest.isAutoSell() ? Messages.TOGGLE_ON : Messages.TOGGLE_OFF), Placeholder.parsed("collectchunk", chest.isCollectChunk() ? Messages.TOGGLE_ON : Messages.TOGGLE_OFF), Placeholder.parsed("deleteunsellable", chest.isDeleteUnsellable() ? Messages.TOGGLE_ON : Messages.TOGGLE_OFF)).get();
             GuiItem guiItem = new GuiItem(itemStack);
 
             guiItem.setAction(event -> {
                 if (Prices.pay((Player) event.getWhoClicked(), (List<String>) inventoryItem.getOrDefault("prices", List.of()))) {
                     Actions.run((Player) event.getWhoClicked(), this.chest, (List<String>) inventoryItem.getOrDefault("actions", List.of()));
+                    updateGui();
                 }
             });
 

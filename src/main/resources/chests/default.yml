@@ -14,6 +14,8 @@ options:
   bank: true
   instant-collect: true
   charge: true
+  # In hours
+  max-charge: 24
 
 inventory:
   title: "<green><owner>'s</green> <white>default sellchest"
@@ -29,10 +31,12 @@ inventory:
         - "1-10"
         - "12"
     - type: "gold_block"
-      name: ""
+      name: "Bank: <bank>"
       lore:
         - ""
+        - "Click to toggle!"
       actions:
+        - "[toggle] bank"
         - "[close]"
       slots:
         - "13"

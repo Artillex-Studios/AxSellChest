@@ -124,9 +124,9 @@ public class Chests {
         }
     }
 
-    public static boolean isChestAt(Location location) {
+    public static Chest getChestAt(Location location) {
         World world = location.getWorld();
-        if (world == null) return false;
+        if (world == null) return null;
 
         UUID worldUUID = world.getUID();
         int x = Math.round(location.getX()) >> 4;
@@ -149,14 +149,14 @@ public class Chests {
                     Chest chest = chests.get(j);
                     if (!chest.getLocation().equals(location)) continue;
 
-                    return true;
+                    return chest;
                 }
 
-                return false;
+                return null;
             }
         }
 
-        return false;
+        return null;
     }
 
     public static void tickHolograms() {

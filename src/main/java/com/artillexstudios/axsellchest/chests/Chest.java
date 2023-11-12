@@ -5,8 +5,11 @@ import com.artillexstudios.axapi.hologram.HologramFactory;
 import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.serializers.Serializers;
 import com.artillexstudios.axapi.utils.StringUtils;
+import com.artillexstudios.axsellchest.AxSellChestPlugin;
+import com.artillexstudios.axsellchest.data.DataHandler;
 import com.artillexstudios.axsellchest.integrations.prices.PricesIntegration;
 import com.artillexstudios.axsellchest.integrations.stacker.StackerIntegration;
+import com.artillexstudios.axsellchest.menu.Menu;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -44,6 +47,7 @@ public class Chest {
     private long charge;
     private Inventory inventory;
     private Hologram hologram;
+    private final Menu menu;
 
     public Chest(ChestType type, Location location, UUID ownerUUID, long itemsSold, double moneyMade, int locationId, boolean autoSell, boolean collectChunk, boolean deleteUnsellable, boolean bank, long charge) {
         this.type = type;
@@ -59,6 +63,8 @@ public class Chest {
         this.deleteUnsellable = deleteUnsellable;
         this.bank = bank;
         this.charge = charge;
+
+        menu = new Menu(this);
 
         Chests.load(this);
 
@@ -223,6 +229,10 @@ public class Chest {
         return items;
     }
 
+    public Menu getMenu() {
+        return menu;
+    }
+
     public int getLocationId() {
         return locationId;
     }
@@ -275,6 +285,26 @@ public class Chest {
         return charge;
     }
 
+    public void setAutoSell(boolean autoSell) {
+        this.autoSell = autoSell;
+    }
+
+    public void setBank(boolean bank) {
+        this.bank = bank;
+    }
+
+    public void setCollectChunk(boolean collectChunk) {
+        this.collectChunk = collectChunk;
+    }
+
+    public void setDeleteUnsellable(boolean deleteUnsellable) {
+        this.deleteUnsellable = deleteUnsellable;
+    }
+
+    public void setCharge(long charge) {
+        this.charge = charge;
+    }
+
     public boolean isTicking() {
         return this.ticking;
     }
@@ -285,6 +315,11 @@ public class Chest {
 
     public void onLoad() {
 
+    }
+
+    public void onReload() {
+        this.hologram.remove();
+        this.hologram = null;
     }
 
     public void onUnload() {
