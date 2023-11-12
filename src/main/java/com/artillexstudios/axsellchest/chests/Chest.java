@@ -1,6 +1,13 @@
 package com.artillexstudios.axsellchest.chests;
 
+import com.artillexstudios.axapi.hologram.Hologram;
+import com.artillexstudios.axapi.hologram.HologramFactory;
 import com.artillexstudios.axapi.scheduler.Scheduler;
+import com.artillexstudios.axapi.serializers.Serializers;
+import com.artillexstudios.axapi.utils.StringUtils;
+import com.artillexstudios.axsellchest.integrations.prices.PricesIntegration;
+import com.artillexstudios.axsellchest.integrations.stacker.StackerIntegration;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -9,10 +16,13 @@ import org.bukkit.block.Container;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.UUID;
 
 public class Chest {
@@ -22,6 +32,7 @@ public class Chest {
     private final OfflinePlayer owner;
     private final ArrayList<Item> items = new ArrayList<>();
     private final UUID ownerUUID;
+    private final String ownerName;
     private boolean ticking = false;
     private double moneyMade;
     private long itemsSold;
@@ -32,11 +43,13 @@ public class Chest {
     private boolean bank;
     private long charge;
     private Inventory inventory;
+    private Hologram hologram;
 
     public Chest(ChestType type, Location location, UUID ownerUUID, long itemsSold, double moneyMade, int locationId, boolean autoSell, boolean collectChunk, boolean deleteUnsellable, boolean bank, long charge) {
         this.type = type;
         this.location = location;
         this.owner = Bukkit.getOfflinePlayer(ownerUUID);
+        this.ownerName = owner.getName();
         this.itemsSold = itemsSold;
         this.moneyMade = moneyMade;
         this.locationId = locationId;
@@ -59,10 +72,134 @@ public class Chest {
 
     public void tick() {
         if (!ticking) return;
+        if (this.type.getConfig().CHARGE && charge < System.currentTimeMillis()) return;
         if (type.getChestTick() % ChestTicker.getTick() != 0) return;
         if (inventory == null) return;
 
+        double moneyMade = 0;
+        if (autoSell) {
+            if (collectChunk) {
+                moneyMade += instantCollectAndSell();
+            }
 
+            moneyMade += sellInventory();
+        } else {
+            if (collectChunk) {
+                collectToChest();
+            }
+        }
+
+        moneyMade *= this.type.getConfig().BOOSTER;
+
+        System.out.printf("Oreo %s", moneyMade);
+    }
+
+    public void updateHologram() {
+        if (!this.type.getConfig().HOLOGRAM) return;
+        if (hologram == null) {
+            hologram = HologramFactory.get().spawnHologram(location.clone().add(0, this.type.getConfig().HOLOGRAM_HEIGHT, 0), "chest-" + Serializers.LOCATION.serialize(this.location));
+
+            List<String> lines = this.type.getConfig().HOLOGRAM_CONTENT;
+            int contentSize = lines.size();
+            for (int i = 0; i < contentSize; i++) {
+                String line = lines.get(i);
+                hologram.addLine(StringUtils.format(line, Placeholder.parsed("items_sold", String.valueOf(itemsSold)),
+                        Placeholder.parsed("money_made", String.valueOf(moneyMade)),
+                        Placeholder.parsed("charge", StringUtils.formatTime(System.currentTimeMillis() - charge)),
+                        Placeholder.parsed("owner", ownerName)
+                ));
+            }
+        }
+
+        List<String> lines = this.type.getConfig().HOLOGRAM_CONTENT;
+        int contentSize = lines.size();
+
+        for (int i = 0; i < contentSize; i++) {
+            String line = lines.get(i);
+            hologram.setLine(i, StringUtils.format(line, Placeholder.parsed("items_sold", String.valueOf(itemsSold)),
+                    Placeholder.parsed("money_made", String.valueOf(moneyMade)),
+                    Placeholder.parsed("charge", StringUtils.formatTime(System.currentTimeMillis() - charge)),
+                    Placeholder.parsed("owner", ownerName)
+            ));
+        }
+    }
+
+    public void remove() {
+        this.ticking = false;
+        Chests.remove(this);
+    }
+
+    public double instantCollectAndSell() {
+        List<Item> chunkItems = getItemsInChunk();
+        int chunkItemSize = chunkItems.size();
+        if (chunkItemSize == 0) return 0;
+
+        double price = 0;
+        for (int i = 0; i < chunkItemSize; i++) {
+            Item item = chunkItems.get(i);
+            ItemStack itemStack = item.getItemStack();
+            int amount = StackerIntegration.getInstance().getAmount(item);
+
+            double itemPrice = PricesIntegration.getInstance().getPrice(this.owner, itemStack, amount);
+            if (itemPrice == 0) {
+                continue;
+            }
+
+            // Remove the item only if it can be sold
+            item.remove();
+
+            price += itemPrice;
+        }
+
+        return price;
+    }
+
+    public double sellInventory() {
+        if (inventory == null) return 0;
+        if (inventory.isEmpty()) return 0;
+
+        ListIterator<ItemStack> iterator = inventory.iterator();
+        double price = 0;
+        while (iterator.hasNext()) {
+            ItemStack itemStack = iterator.next();
+            if (itemStack == null || itemStack.getType().isAir()) continue;
+
+            int amount = itemStack.getAmount();
+            double itemPrice = PricesIntegration.getInstance().getPrice(this.owner, itemStack, amount);
+            if (itemPrice == 0) continue;
+
+            iterator.remove();
+            price += itemPrice;
+        }
+
+        return price;
+    }
+
+    public void collectToChest() {
+        List<Item> chunkItems = getItemsInChunk();
+        int chunkItemSize = chunkItems.size();
+        if (chunkItemSize == 0) return;
+
+        for (int i = 0; i < chunkItemSize; i++) {
+            Item item = chunkItems.get(i);
+            ItemStack itemStack = item.getItemStack();
+            int amount = StackerIntegration.getInstance().getAmount(item);
+
+            double itemPrice = PricesIntegration.getInstance().getPrice(this.owner, itemStack, amount);
+            if (itemPrice == 0) {
+                continue;
+            }
+
+            itemStack.setAmount(amount);
+            HashMap<Integer, ItemStack> remaining = inventory.addItem(itemStack);
+            if (remaining.isEmpty()) {
+                // Remove the item only if it can be sold
+                item.remove();
+            } else {
+                // TODO: Test
+                StackerIntegration.getInstance().setAmount(item, amount);
+            }
+        }
     }
 
     private List<Item> getItemsInChunk() {
@@ -124,6 +261,10 @@ public class Chest {
 
     public boolean isCollectChunk() {
         return collectChunk;
+    }
+
+    public String getOwnerName() {
+        return ownerName;
     }
 
     public boolean isDeleteUnsellable() {

@@ -1,1 +1,6 @@
 place-in-inventory: true
+
+integrations:
+  stacker: "RoseStacker"
+  economy: "Vault"
+  prices: "ShopGUIPlus"

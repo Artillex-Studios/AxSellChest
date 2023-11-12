@@ -1,0 +1,10 @@
+name: "AxSellChest"
+main: "com.artillexstudio.axsellchest.AxSellChestPlugin"
+version: "$version"
+api-version: "1.18"
+
+softdepend:
+  - RoseStacker
+  - WildStacker
+  - ShopGUIPlus
+  - Vault

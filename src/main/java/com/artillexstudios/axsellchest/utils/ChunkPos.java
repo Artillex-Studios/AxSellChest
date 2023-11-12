@@ -11,7 +11,7 @@ public class ChunkPos {
     private final UUID worldUUID;
     private final int x;
     private final int z;
-    private boolean ticking = false;
+    private volatile boolean ticking = false;
 
     public ChunkPos(World world, int x, int z) {
         this.worldUUID = world.getUID();
@@ -27,22 +27,6 @@ public class ChunkPos {
         this.chests.remove(chest);
 
         return this.chests.isEmpty();
-    }
-
-    public void setTicking(boolean ticking) {
-        this.ticking = ticking;
-
-        ArrayList<Chest> chests = this.chests;
-        int size = chests.size();
-
-        for (int i = 0; i < size; i++) {
-            Chest chest = chests.get(i);
-            chest.setTicking(ticking);
-
-            if (!ticking) {
-                chest.onUnload();
-            }
-        }
     }
 
     public int getX() {
@@ -63,6 +47,24 @@ public class ChunkPos {
 
     public boolean isTicking() {
         return this.ticking;
+    }
+
+    public void setTicking(boolean ticking) {
+        this.ticking = ticking;
+
+        ArrayList<Chest> chests = this.chests;
+        int size = chests.size();
+
+        for (int i = 0; i < size; i++) {
+            Chest chest = chests.get(i);
+            chest.setTicking(ticking);
+
+            if (ticking) {
+                chest.onLoad();
+            } else {
+                chest.onUnload();
+            }
+        }
     }
 
     @Override

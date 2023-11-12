@@ -51,7 +51,7 @@ public class ChestConfig extends AbstractConfig {
             """)
     public int INVENTORY_SIZE = 45;
     @Key("inventory.items")
-    public List<Map<?, ?>> INVENTORY_ITEMS = List.of();
+    public List<Map<Object, Object>> INVENTORY_ITEMS = List.of();
     @Key("hologram.height")
     public double HOLOGRAM_HEIGHT = 1.5;
     @Key("hologram.content")

@@ -124,6 +124,60 @@ public class Chests {
         }
     }
 
+    public static boolean isChestAt(Location location) {
+        World world = location.getWorld();
+        if (world == null) return false;
+
+        UUID worldUUID = world.getUID();
+        int x = Math.round(location.getX()) >> 4;
+        int z = Math.round(location.getZ()) >> 4;
+
+        ArrayList<ChunkPos> chunks = Chests.chunks;
+        int chunksSize = chunks.size();
+
+        for (int i = 0; i < chunksSize; i++) {
+            ChunkPos pos = chunks.get(i);
+            // There's no way that someone is interacting with a chest
+            // In a chunk that's not tracked by us
+            if (!pos.isTicking()) continue;
+
+            if (pos.getX() == x && pos.getX() == z && pos.getWorldUUID().equals(worldUUID)) {
+                ArrayList<Chest> chests = pos.getChests();
+                int chestSize = chests.size();
+
+                for (int j = 0; j < chestSize; j++) {
+                    Chest chest = chests.get(j);
+                    if (!chest.getLocation().equals(location)) continue;
+
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    public static void tickHolograms() {
+        synchronized (mutex) {
+            ArrayList<ChunkPos> chunks = Chests.chunks;
+            int chunksSize = chunks.size();
+
+            for (int i = 0; i < chunksSize; i++) {
+                ChunkPos pos = chunks.get(i);
+                if (!pos.isTicking()) continue;
+
+                ArrayList<Chest> chests = pos.getChests();
+                int chestSize = chests.size();
+                for (int j = 0; j < chestSize; j++) {
+                    Chest chest = chests.get(i);
+                    chest.updateHologram();
+                }
+            }
+        }
+    }
+
     protected static ArrayList<ChunkPos> getChunks() {
         synchronized (mutex) {
             return chunks;
