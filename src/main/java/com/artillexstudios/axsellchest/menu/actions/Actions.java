@@ -4,6 +4,7 @@ import com.artillexstudios.axsellchest.chests.Chest;
 import com.artillexstudios.axsellchest.menu.actions.impl.ActionCharge;
 import com.artillexstudios.axsellchest.menu.actions.impl.ActionCloseMenu;
 import com.artillexstudios.axsellchest.menu.actions.impl.ActionConsoleCommand;
+import com.artillexstudios.axsellchest.menu.actions.impl.ActionOpenContainer;
 import com.artillexstudios.axsellchest.menu.actions.impl.ActionPlayerCommand;
 import com.artillexstudios.axsellchest.menu.actions.impl.ActionSendMessage;
 import com.artillexstudios.axsellchest.menu.actions.impl.ActionToggle;
@@ -23,6 +24,7 @@ public class Actions {
     private static final Action PLAYER_COMMAND = register(new ActionPlayerCommand());
     private static final Action SEND_MESSAGE = register(new ActionSendMessage());
     private static final Action TOGGLE = register(new ActionToggle());
+    private static final Action OPEN_CONTAINER = register(new ActionOpenContainer());
 
     public static Action register(Action action) {
         ACTIONS.put(action.getId(), action);

@@ -229,6 +229,10 @@ public class Chest {
         return items;
     }
 
+    public Inventory getInventory() {
+        return inventory;
+    }
+
     public Menu getMenu() {
         return menu;
     }
