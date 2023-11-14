@@ -7,6 +7,7 @@ import com.artillexstudios.axapi.serializers.Serializers;
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axsellchest.AxSellChestPlugin;
 import com.artillexstudios.axsellchest.data.DataHandler;
+import com.artillexstudios.axsellchest.integrations.economy.EconomyIntegration;
 import com.artillexstudios.axsellchest.integrations.prices.PricesIntegration;
 import com.artillexstudios.axsellchest.integrations.stacker.StackerIntegration;
 import com.artillexstudios.axsellchest.menu.Menu;
@@ -97,6 +98,7 @@ public class Chest {
 
         moneyMade *= this.type.getConfig().BOOSTER;
 
+        EconomyIntegration.getInstance().give(owner, moneyMade);
         System.out.printf("Oreo %s", moneyMade);
     }
 

@@ -14,8 +14,8 @@ options:
   bank: true
   instant-collect: true
   charge: true
-  # In hours
-  max-charge: 24
+  # In minutes
+  max-charge: 1440
 
 inventory:
   title: "<green><owner>'s</green> <white>default sellchest"

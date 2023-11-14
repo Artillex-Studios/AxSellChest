@@ -9,19 +9,19 @@ public class Config extends AbstractConfig {
     @Comment("""
             Can be RoseStacker, WildStacker, or default
             """)
-    private static String STACKER_INTEGRATION = "RoseStacker";
+    public static String STACKER_INTEGRATION = "RoseStacker";
 
     @Key("integrations.economy")
     @Comment("""
             Can be Vault
             """)
-    private static String ECONOMY_INTEGRATION = "Vault";
+    public static String ECONOMY_INTEGRATION = "Vault";
 
     @Key("integrations.prices")
     @Comment("""
             Can be ShopGUIPlus or local
             """)
-    private static String PRICES_INTEGRATION = "ShopGUIPlus";
+    public static String PRICES_INTEGRATION = "ShopGUIPlus";
 
     @Key("autosave-minutes")
     @Comment("""

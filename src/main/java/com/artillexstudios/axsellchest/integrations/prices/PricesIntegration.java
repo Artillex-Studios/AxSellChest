@@ -1,8 +1,13 @@
 package com.artillexstudios.axsellchest.integrations.prices;
 
+import com.artillexstudios.axsellchest.config.impl.Config;
 import com.artillexstudios.axsellchest.integrations.Integration;
+import com.artillexstudios.axsellchest.integrations.prices.impl.ShopGUIPlusIntegration;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.Locale;
 
 public interface PricesIntegration extends Integration {
 
@@ -18,7 +23,13 @@ public interface PricesIntegration extends Integration {
         PricesIntegration integration;
 
         public void reload() {
-
+            switch (Config.PRICES_INTEGRATION.toLowerCase(Locale.ENGLISH)) {
+                case "shopguiplus" -> {
+                    if (Bukkit.getPluginManager().getPlugin("ShopGUIPlus") != null) {
+                        integration = new ShopGUIPlusIntegration();
+                    }
+                }
+            }
         }
     }
 }
