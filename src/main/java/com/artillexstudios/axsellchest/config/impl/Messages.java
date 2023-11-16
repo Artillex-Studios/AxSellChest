@@ -5,7 +5,7 @@ import com.artillexstudios.axsellchest.utils.FileUtils;
 
 public class Messages extends AbstractConfig {
     @Key("prefix")
-    public static String PREFIX = "<gradient:#FFAA00:#FFBB00><b>AxSellchest</gradient></b> <white>|</white> ";
+    public static String PREFIX = "<gradient:#FFAA00:#FFBB00><b>AxSellchest</gradient> <white>|</white> ";
 
     @Key("reload")
     public static String RELOAD = "<green>Successfully reloaded in <white><time>ms</green>!";
@@ -31,8 +31,8 @@ public class Messages extends AbstractConfig {
     private static final Messages MESSAGES = new Messages();
 
     public static void reload() {
-        FileUtils.extractFile(ChestConfig.class, "config.yml", FileUtils.PLUGIN_DIRECTORY, false);
+        FileUtils.extractFile(Messages.class, "messages.yml", FileUtils.PLUGIN_DIRECTORY, false);
 
-        MESSAGES.reload(FileUtils.PLUGIN_DIRECTORY.resolve("config.yml"), ChestConfig.class, null);
+        MESSAGES.reload(FileUtils.PLUGIN_DIRECTORY.resolve("messages.yml"), Messages.class, null);
     }
 }

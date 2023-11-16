@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 group = 'com.artillexstudios.axsellchest'
@@ -23,21 +24,32 @@ repositories {
     maven {
         url = uri('https://jitpack.io/')
     }
+
+    maven {
+        url = uri('https://repo.alessiodp.com/releases/')
+    }
 }
 
 dependencies {
+    implementation("net.byteflux:libby-bukkit:1.3.0")
+    implementation("com.github.Artillex-Studios.AxAPI:AxAPI:1.1")
     compileOnly('org.spigotmc:spigot-api:1.20.1-R0.1-SNAPSHOT')
-    compileOnly("com.github.artillex-studios:axapi:1.0:all")
-    implementation("org.slf4j:slf4j-api:2.0.9")
-    implementation("com.h2database:h2:2.2.220")
-    implementation("commons-io:commons-io:2.15.0")
-    implementation("org.apache.commons:commons-text:1.11.0")
-    implementation("dev.triumphteam:triumph-gui:3.1.7")
+    compileOnly("org.slf4j:slf4j-api:2.0.9")
+    compileOnly("com.h2database:h2:2.2.220")
+    compileOnly("commons-io:commons-io:2.15.0")
+    compileOnly("org.apache.commons:commons-text:1.11.0")
+    compileOnly("dev.triumphteam:triumph-gui:3.1.7")
     compileOnly("dev.rosewood:rosestacker:1.5.11")
     compileOnly("com.bgsoftware:WildStackerAPI:2023.2")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
     compileOnly("com.github.brcdev-minecraft:shopgui-api:3.0.0")
-    implementation("me.carleslc.Simple-YAML:Simple-Yaml:1.8.4") {
-        exclude group: 'org.yaml', module: 'snakeyaml'
-    }
+    compileOnly("me.carleslc.Simple-YAML:Simple-Yaml:1.8.4")
 }
+
+shadowJar {
+    relocate("net.byteflux", "com.artillexstudios.axsellchest.libs.libby")
+//    relocate("com.artillexstudios.axapi", "com.artillexstudios.axsellchest.libs.axapi")
+    relocate("com.h2database", "com.artillexstudios.axsellchest.libs.h2")
+}
+
+build.dependsOn shadowJar

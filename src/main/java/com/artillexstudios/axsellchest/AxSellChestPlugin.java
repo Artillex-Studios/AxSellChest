@@ -13,9 +13,11 @@ import com.artillexstudios.axsellchest.data.impl.H2DataHandler;
 import com.artillexstudios.axsellchest.integrations.economy.EconomyIntegration;
 import com.artillexstudios.axsellchest.integrations.prices.PricesIntegration;
 import com.artillexstudios.axsellchest.integrations.stacker.StackerIntegration;
+import com.artillexstudios.axsellchest.library.Libraries;
 import com.artillexstudios.axsellchest.listeners.ChestListener;
 import com.artillexstudios.axsellchest.listeners.ChunkListener;
 import com.artillexstudios.axsellchest.listeners.WorldListener;
+import net.byteflux.libby.BukkitLibraryManager;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import revxrsal.commands.bukkit.BukkitCommandHandler;
@@ -30,6 +32,17 @@ public class AxSellChestPlugin extends AxPlugin {
 
     public static AxSellChestPlugin getInstance() {
         return INSTANCE;
+    }
+
+    @Override
+    public void load() {
+        BukkitLibraryManager manager = new BukkitLibraryManager(this);
+        manager.addJitPack();
+        manager.addMavenCentral();
+
+        for (Libraries value : Libraries.values()) {
+            manager.loadLibrary(value.getLibrary());
+        }
     }
 
     @Override

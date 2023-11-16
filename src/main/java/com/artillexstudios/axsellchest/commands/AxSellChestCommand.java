@@ -23,13 +23,6 @@ public class AxSellChestCommand {
         player.sendMessage(StringUtils.formatToString(Messages.PREFIX + Messages.RECEIVE_SUCCESS, Placeholder.parsed("amount", String.valueOf(amount)), Placeholder.parsed("type", chestType.getName())));
     }
 
-    @Subcommand("give")
-    @CommandPermission("axsellchest.command.give")
-    public void give(Player sender, ChestType chestType, int amount) {
-        sender.getInventory().addItem(new ItemBuilder(chestType.getItem(0, 0)).amount(amount).get());
-        sender.sendMessage(StringUtils.formatToString(Messages.PREFIX + Messages.GIVE_SUCCESS, Placeholder.parsed("amount", String.valueOf(amount)), Placeholder.parsed("player", sender.getName()), Placeholder.parsed("type", chestType.getName())));
-    }
-
     @Subcommand("reload")
     @CommandPermission("axsellchest.command.reload")
     public void reload(CommandSender sender) {

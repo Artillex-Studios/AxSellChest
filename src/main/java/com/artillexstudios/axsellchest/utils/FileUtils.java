@@ -76,26 +76,22 @@ public class FileUtils {
     }
 
     public static void copyFromResource(@NotNull String path) {
-        File file = PLUGIN_DIRECTORY.resolve(path).toFile();
-
-        if (file.mkdirs()) {
-            try (ZipFile zip = new ZipFile(AxSellChestPlugin.getInstance().getClass().getProtectionDomain().getCodeSource().getLocation().getPath())) {
-                for (Iterator<? extends ZipEntry> it = zip.entries().asIterator(); it.hasNext(); ) {
-                    ZipEntry entry = it.next();
-                    if (entry.getName().startsWith(path + "/")) {
-                        if (!entry.getName().endsWith(".yaml") && !entry.getName().endsWith(".yml")) continue;
-                        InputStream resource = AxSellChestPlugin.getInstance().getResource(entry.getName());
-                        if (resource == null) {
-                            LOGGER.error("Could not find file {} in plugin's assets!", entry.getName());
-                            continue;
-                        }
-
-                        Files.copy(resource, PLUGIN_DIRECTORY.resolve(entry.getName()));
+        try (ZipFile zip = new ZipFile(AxSellChestPlugin.getInstance().getClass().getProtectionDomain().getCodeSource().getLocation().getPath())) {
+            for (Iterator<? extends ZipEntry> it = zip.entries().asIterator(); it.hasNext(); ) {
+                ZipEntry entry = it.next();
+                if (entry.getName().startsWith(path + "/")) {
+                    if (!entry.getName().endsWith(".yaml") && !entry.getName().endsWith(".yml")) continue;
+                    InputStream resource = AxSellChestPlugin.getInstance().getResource(entry.getName());
+                    if (resource == null) {
+                        LOGGER.error("Could not find file {} in plugin's assets!", entry.getName());
+                        continue;
                     }
+
+                    Files.copy(resource, PLUGIN_DIRECTORY.resolve(entry.getName()));
                 }
-            } catch (IOException exception) {
-                LOGGER.error("An unexpected error occurred while extracting directory {} from plugin's assets!", path, exception);
             }
+        } catch (IOException exception) {
+            LOGGER.error("An unexpected error occurred while extracting directory {} from plugin's assets!", path, exception);
         }
     }
 }

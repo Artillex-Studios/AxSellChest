@@ -23,6 +23,7 @@ public class ChestTypes {
         TYPES.clear();
 
         if (CHEST_TYPES_FOLDER.mkdirs()) {
+            System.out.println("MKDIRS");
             FileUtils.copyFromResource("chests");
         }
 

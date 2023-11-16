@@ -24,7 +24,7 @@
 package com.artillexstudios.axsellchest.config;
 
 import com.artillexstudios.axsellchest.utils.FileUtils;
-import org.apache.commons.text.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.simpleyaml.configuration.ConfigurationSection;
 import org.simpleyaml.configuration.comments.CommentType;

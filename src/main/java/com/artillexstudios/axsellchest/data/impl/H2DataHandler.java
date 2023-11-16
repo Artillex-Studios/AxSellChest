@@ -66,7 +66,7 @@ public class H2DataHandler implements DataHandler {
             return;
         }
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `axsellchest_chests`(`id` INT AUTO_INCREMENT PRIMARY KEY, `location_id` INT, `ownerid` UUID, `type_id` TINYINT, `money_made` DOUBLE, `items_sold` BIGINT, `auto_sell` BOOL, `collect_chunk` BOOL, `delete_unsellable` BOOL, `bank` BOOL, `charge` BIGINT, FOREIGN KEY(˙location_id˙) REFERENCES `axsellchest_locations`(`id`), FOREIGN KEY(`owner_id`) REFERENCES `axsellchest_users`(`uuid`), FOREIGN KEY(`type_id`) REFERENCES `axsellchest_types`(`id`));")) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `axsellchest_chests`(`id` INT AUTO_INCREMENT PRIMARY KEY, `location_id` INT, `owner_id` UUID, `type_id` TINYINT, `money_made` DOUBLE, `items_sold` BIGINT, `auto_sell` BOOL, `collect_chunk` BOOL, `delete_unsellable` BOOL, `bank` BOOL, `charge` BIGINT, FOREIGN KEY(`location_id`) REFERENCES `axsellchest_locations`(`id`), FOREIGN KEY(`owner_id`) REFERENCES `axsellchest_users`(`uuid`), FOREIGN KEY(`type_id`) REFERENCES `axsellchest_types`(`id`));")) {
             preparedStatement.executeUpdate();
         } catch (SQLException exception) {
             LOGGER.error("An unexpected error occurred while creating chests table!", exception);
@@ -89,7 +89,7 @@ public class H2DataHandler implements DataHandler {
         try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT `id` FROM `axsellchest_types` WHERE `name` = ?;")) {
             preparedStatement.setString(1, type.getName());
 
-            try (ResultSet resultSet = preparedStatement.getResultSet()) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
                     typeId = resultSet.getInt("id");
                 }
@@ -103,7 +103,7 @@ public class H2DataHandler implements DataHandler {
             preparedStatement.setString(1, world.getName());
             preparedStatement.setInt(2, typeId);
 
-            try (ResultSet resultSet = preparedStatement.getResultSet()) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     int locationId = resultSet.getInt("location_id");
                     UUID ownerUUID = (UUID) resultSet.getObject("owner_id");

@@ -43,8 +43,8 @@ public class Config extends AbstractConfig {
     private static final Config CONFIG = new Config();
 
     public static void reload() {
-        FileUtils.extractFile(ChestConfig.class, "config.yml", FileUtils.PLUGIN_DIRECTORY, false);
+        FileUtils.extractFile(Config.class, "config.yml", FileUtils.PLUGIN_DIRECTORY, false);
 
-        CONFIG.reload(FileUtils.PLUGIN_DIRECTORY.resolve("config.yml"), ChestConfig.class, null);
+        CONFIG.reload(FileUtils.PLUGIN_DIRECTORY.resolve("config.yml"), Config.class, null);
     }
 }

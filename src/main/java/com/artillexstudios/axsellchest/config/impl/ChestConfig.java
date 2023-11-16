@@ -69,7 +69,7 @@ public class ChestConfig extends AbstractConfig {
     }
 
     public void reload() {
-        FileUtils.extractFile(ChestConfig.class, fileName, FileUtils.PLUGIN_DIRECTORY.resolve("chests"), false);
+        FileUtils.extractFile(ChestConfig.class, "chests/" + fileName, FileUtils.PLUGIN_DIRECTORY, false);
 
         this.reload(FileUtils.PLUGIN_DIRECTORY.resolve("chests").resolve(fileName), ChestConfig.class, this);
     }
