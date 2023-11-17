@@ -33,6 +33,10 @@ public interface EconomyIntegration extends Integration {
                     }
                 }
             }
+
+            if (integration != null) {
+                integration.reload();
+            }
         }
     }
 }

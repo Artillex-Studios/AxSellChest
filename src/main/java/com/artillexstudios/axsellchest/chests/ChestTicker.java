@@ -6,7 +6,7 @@ import com.artillexstudios.axsellchest.utils.ChunkPos;
 import java.util.ArrayList;
 
 public class ChestTicker {
-    private static long tick;
+    private static long tick = 1;
 
     private static void tick() {
         ArrayList<ChunkPos> chunks = Chests.getChunks();
@@ -21,7 +21,7 @@ public class ChestTicker {
             int chestsSize = chests.size();
 
             for (int j = 0; j < chestsSize; j++) {
-                Chest chest = chests.get(i);
+                Chest chest = chests.get(j);
                 chest.tick();
             }
         }

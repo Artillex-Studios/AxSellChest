@@ -30,6 +30,10 @@ public interface PricesIntegration extends Integration {
                     }
                 }
             }
+
+            if (integration != null) {
+                integration.reload();
+            }
         }
     }
 }

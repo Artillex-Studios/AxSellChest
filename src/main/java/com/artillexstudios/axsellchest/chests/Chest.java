@@ -5,8 +5,6 @@ import com.artillexstudios.axapi.hologram.HologramFactory;
 import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.serializers.Serializers;
 import com.artillexstudios.axapi.utils.StringUtils;
-import com.artillexstudios.axsellchest.AxSellChestPlugin;
-import com.artillexstudios.axsellchest.data.DataHandler;
 import com.artillexstudios.axsellchest.integrations.economy.EconomyIntegration;
 import com.artillexstudios.axsellchest.integrations.prices.PricesIntegration;
 import com.artillexstudios.axsellchest.integrations.stacker.StackerIntegration;
@@ -80,12 +78,14 @@ public class Chest {
     public void tick() {
         if (!ticking) return;
         if (this.type.getConfig().CHARGE && charge < System.currentTimeMillis()) return;
-        if (type.getChestTick() % ChestTicker.getTick() != 0) return;
-        if (inventory == null) return;
+        if (ChestTicker.getTick() % type.getChestTick() != 0) return;
 
+        System.out.println("Yes");
         double moneyMade = 0;
         if (autoSell) {
+            System.out.println("Autosell");
             if (collectChunk) {
+                System.out.println("Collectchunk");
                 moneyMade += instantCollectAndSell();
             }
 
@@ -184,6 +184,7 @@ public class Chest {
     }
 
     public void collectToChest() {
+        if (inventory == null) return;
         List<Item> chunkItems = getItemsInChunk();
         int chunkItemSize = chunkItems.size();
         if (chunkItemSize == 0) return;

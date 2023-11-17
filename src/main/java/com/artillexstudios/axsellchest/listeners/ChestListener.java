@@ -103,13 +103,19 @@ public class ChestListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerInteractEvent(PlayerInteractEvent event) {
+        System.out.println("A");
         Block clickedBlock = event.getClickedBlock();
         if (clickedBlock == null) return;
+        System.out.println("B");
         if (clickedBlock.getType() == Material.AIR) return;
+        System.out.println("C");
 
         Chest chest = Chests.getChestAt(clickedBlock.getLocation());
         if (chest == null) return;
+        System.out.println("D");
 
+        event.getPlayer().closeInventory();
         chest.getMenu().open(event.getPlayer());
+        System.out.println("OPENING MENU!");
     }
 }
