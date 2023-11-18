@@ -26,7 +26,6 @@ public class Chests {
             for (int i = 0; i < chunksSize; i++) {
                 ChunkPos pos = chunks.get(i);
                 if (pos.getX() == x && pos.getZ() == z && pos.getWorldUUID() == worldUUID) {
-                    System.out.println("Started ticking!" + x + " " + z);
                     pos.setTicking(true);
                     break;
                 }
@@ -46,7 +45,6 @@ public class Chests {
             for (int i = 0; i < chunksSize; i++) {
                 ChunkPos pos = chunks.get(i);
                 if (pos.getX() == x && pos.getZ() == z && pos.getWorldUUID() == worldUUID) {
-                    System.out.println("Stopped ticking! " + x + " " + z);
                     pos.setTicking(false);
                     break;
                 }
@@ -78,7 +76,6 @@ public class Chests {
             }
 
             if (chunkPos == null) {
-                System.out.println("Adding new position");
                 chunkPos = new ChunkPos(world, x, z);
                 chunks.add(chunkPos);
             }
@@ -91,7 +88,6 @@ public class Chests {
         Location location = chest.getLocation();
         World world = location.getWorld();
         if (world == null) return;
-        System.out.println("Removing!");
 
         int x = (int) Math.round(location.getX()) >> 4;
         int z = (int) Math.round(location.getZ()) >> 4;

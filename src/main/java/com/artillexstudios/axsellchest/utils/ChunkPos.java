@@ -51,7 +51,6 @@ public class ChunkPos {
 
     public void setTicking(boolean ticking) {
         this.ticking = ticking;
-        System.out.println("Set ticking to: " + ticking);
 
         ArrayList<Chest> chests = this.chests;
         int size = chests.size();

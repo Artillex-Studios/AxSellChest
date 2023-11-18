@@ -4,14 +4,13 @@ import com.artillexstudios.axsellchest.config.impl.Config;
 import com.artillexstudios.axsellchest.integrations.Integration;
 import com.artillexstudios.axsellchest.integrations.prices.impl.ShopGUIPlusIntegration;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Locale;
 
 public interface PricesIntegration extends Integration {
 
-    double getPrice(OfflinePlayer player, ItemStack itemStack, int amount);
+    double getPrice(ItemStack itemStack, int amount);
 
     Companion COMPANION = new Companion();
 

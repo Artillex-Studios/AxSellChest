@@ -17,12 +17,6 @@ public class ChestConfig extends AbstractConfig {
             The multiplier of this chest
             """)
     public double BOOSTER = 1.0;
-    @Key("shift-click-open")
-    @Comment("""
-            What should we open for the player when they shift+rightclick on the chest?
-            Can be gui or chest!
-            """)
-    public String SHIFT_CLICK_OPEN = "gui";
     @Key("options.sell-interval")
     @Comment("""
             How often should the chest attempt to sell the items in it's chunk/inventory?
@@ -39,8 +33,6 @@ public class ChestConfig extends AbstractConfig {
     public boolean HOLOGRAM = true;
     @Key("options.bank")
     public boolean BANK = true;
-    @Key("options.instant-collect")
-    public boolean INSTANT_COLLECT = true;
     @Key("options.charge")
     public boolean CHARGE = true;
     @Key("options.max-charge")
@@ -60,7 +52,7 @@ public class ChestConfig extends AbstractConfig {
     @Key("hologram.content")
     public List<String> HOLOGRAM_CONTENT = List.of();
     @Key("item")
-    public Map<?, ?> ITEM_SECTION = Map.of();
+    public Map<Object, Object> ITEM_SECTION = Map.of();
 
     private final String fileName;
 
@@ -79,14 +71,12 @@ public class ChestConfig extends AbstractConfig {
         return "ChestConfig{" +
                 "BLOCK_TYPE='" + BLOCK_TYPE + '\'' +
                 ", BOOSTER=" + BOOSTER +
-                ", SHIFT_CLICK_OPEN='" + SHIFT_CLICK_OPEN + '\'' +
                 ", SELL_INTERVAL=" + SELL_INTERVAL +
                 ", AUTO_SELL=" + AUTO_SELL +
                 ", COLLECT_CHUNK=" + COLLECT_CHUNK +
                 ", DELETE_UNSELLABLE=" + DELETE_UNSELLABLE +
                 ", HOLOGRAM=" + HOLOGRAM +
                 ", BANK=" + BANK +
-                ", INSTANT_COLLECT=" + INSTANT_COLLECT +
                 ", CHARGE=" + CHARGE +
                 ", INVENTORY_TITLE='" + INVENTORY_TITLE + '\'' +
                 ", INVENTORY_SIZE=" + INVENTORY_SIZE +

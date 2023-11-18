@@ -1,6 +1,7 @@
 package com.artillexstudios.axsellchest;
 
 import com.artillexstudios.axapi.AxPlugin;
+import com.artillexstudios.axsellchest.chests.Chest;
 import com.artillexstudios.axsellchest.chests.ChestTicker;
 import com.artillexstudios.axsellchest.chests.ChestType;
 import com.artillexstudios.axsellchest.chests.ChestTypes;
@@ -73,6 +74,14 @@ public class AxSellChestPlugin extends AxPlugin {
         ChestTicker.startTicking();
 
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(Chests::tickHolograms, 1, 1, TimeUnit.SECONDS);
+
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+            DataHandler.QUEUE.submit(() -> {
+                for (Chest chest : Chests.getChests()) {
+                    getDataHandler().saveChest(chest);
+                }
+            });
+        }, 1, Config.AUTOSAVE_MINUTES, TimeUnit.MINUTES);
     }
 
     @Override

@@ -28,6 +28,10 @@ public class Messages extends AbstractConfig {
     @Key("place-limit-reached")
     public static String PLACE_LIMIT_REACHED = "<red>You have reached the maximum number of chests you can place!</red> <gray>(<placed>/<max>)</gray>!";
 
+    @Key("place")
+    public static String PLACE = "<green>You have placed a sellchest!</red> <gray>(<placed>/<max>)</gray>!";
+
+
     private static final Messages MESSAGES = new Messages();
 
     public static void reload() {

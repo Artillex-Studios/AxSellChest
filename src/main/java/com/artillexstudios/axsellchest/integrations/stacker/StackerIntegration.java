@@ -4,6 +4,7 @@ import com.artillexstudios.axsellchest.config.impl.Config;
 import com.artillexstudios.axsellchest.integrations.Integration;
 import com.artillexstudios.axsellchest.integrations.stacker.impl.DefaultStackerIntegration;
 import com.artillexstudios.axsellchest.integrations.stacker.impl.RoseStackerIntegration;
+import com.artillexstudios.axsellchest.integrations.stacker.impl.WildStackerIntegration;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Item;
 
@@ -25,11 +26,17 @@ public interface StackerIntegration extends Integration {
         StackerIntegration integration;
 
         public void reload() {
-            System.out.println("Reloading stacker");
             switch (Config.STACKER_INTEGRATION.toLowerCase(Locale.ENGLISH)) {
                 case "rosestacker" -> {
                     if (Bukkit.getPluginManager().getPlugin("RoseStacker") != null) {
                         integration = new RoseStackerIntegration();
+                    } else {
+                        integration = new DefaultStackerIntegration();
+                    }
+                }
+                case "wildstacker" -> {
+                    if (Bukkit.getPluginManager().getPlugin("WildStacker") != null) {
+                        integration = new WildStackerIntegration();
                     } else {
                         integration = new DefaultStackerIntegration();
                     }

@@ -5,7 +5,6 @@ import com.artillexstudios.axsellchest.chests.Chest;
 import com.artillexstudios.axsellchest.config.impl.Messages;
 import com.artillexstudios.axsellchest.menu.actions.Actions;
 import com.artillexstudios.axsellchest.menu.prices.Prices;
-import com.artillexstudios.axsellchest.utils.Cooldown;
 import com.artillexstudios.axsellchest.utils.ItemBuilder;
 import dev.triumphteam.gui.components.GuiType;
 import dev.triumphteam.gui.guis.Gui;
@@ -18,10 +17,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class Menu {
-    private final Cooldown<UUID> cooldown = new Cooldown<>();
     private final Chest chest;
     private final Gui gui;
 
@@ -39,12 +36,14 @@ public class Menu {
         updateGui();
     }
 
-    private void updateGui() {
+    public void updateGui() {
         for (Map<Object, Object> inventoryItem : chest.getType().getConfig().INVENTORY_ITEMS) {
-            ItemStack itemStack = new ItemBuilder(inventoryItem, Placeholder.unparsed("owner", chest.getOwnerName()), Placeholder.parsed("bank", chest.isBank() ? Messages.TOGGLE_ON : Messages.TOGGLE_OFF), Placeholder.unparsed("autosell", chest.isAutoSell() ? Messages.TOGGLE_ON : Messages.TOGGLE_OFF), Placeholder.parsed("collectchunk", chest.isCollectChunk() ? Messages.TOGGLE_ON : Messages.TOGGLE_OFF), Placeholder.parsed("deleteunsellable", chest.isDeleteUnsellable() ? Messages.TOGGLE_ON : Messages.TOGGLE_OFF)).get();
+            ItemStack itemStack = new ItemBuilder(inventoryItem, Placeholder.unparsed("owner", chest.getOwnerName()), Placeholder.parsed("bank", chest.isBank() ? Messages.TOGGLE_ON : Messages.TOGGLE_OFF), Placeholder.parsed("autosell", chest.isAutoSell() ? Messages.TOGGLE_ON : Messages.TOGGLE_OFF), Placeholder.parsed("collectchunk", chest.isCollectChunk() ? Messages.TOGGLE_ON : Messages.TOGGLE_OFF), Placeholder.parsed("deleteunsellable", chest.isDeleteUnsellable() ? Messages.TOGGLE_ON : Messages.TOGGLE_OFF)).get();
             GuiItem guiItem = getGuiItem(inventoryItem, itemStack);
 
-            gui.setItem(slots((List<String>) inventoryItem.getOrDefault("slots", List.of())), guiItem);
+            for (Integer slots : slots((List<String>) inventoryItem.getOrDefault("slots", List.of()))) {
+                gui.updateItem(slots, guiItem);
+            }
         }
     }
 
@@ -54,12 +53,7 @@ public class Menu {
 
         guiItem.setAction(event -> {
             Player player = (Player) event.getWhoClicked();
-            UUID uuid = player.getUniqueId();
-            if (cooldown.contains(uuid)) {
-                return;
-            }
 
-            cooldown.add(uuid, 10);
             if (Prices.pay(player, (List<String>) inventoryItem.getOrDefault("prices", List.of()))) {
                 Actions.run(player, this.chest, (List<String>) inventoryItem.getOrDefault("actions", List.of()));
                 updateGui();

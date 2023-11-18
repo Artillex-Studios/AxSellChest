@@ -46,10 +46,14 @@ dependencies {
     compileOnly("me.carleslc.Simple-YAML:Simple-Yaml:1.8.4")
 }
 
+compileJava {
+    options.compilerArgs += ["-parameters"]
+}
+
 shadowJar {
     relocate("net.byteflux", "com.artillexstudios.axsellchest.libs.libby")
 //    relocate("com.artillexstudios.axapi", "com.artillexstudios.axsellchest.libs.axapi")
-    relocate("com.h2database", "com.artillexstudios.axsellchest.libs.h2")
+    relocate("org.h2", "com.artillexstudios.axsellchest.libs.h2")
 }
 
 build.dependsOn shadowJar

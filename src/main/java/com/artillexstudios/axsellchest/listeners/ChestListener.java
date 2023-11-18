@@ -18,6 +18,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -34,9 +35,22 @@ import org.bukkit.persistence.PersistentDataType;
 import java.util.HashMap;
 
 public class ChestListener implements Listener {
+    private static final BlockFace[] NEIGHBOUR = new BlockFace[]{BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST};
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockPlaceEvent(BlockPlaceEvent event) {
+        if (event.getBlockPlaced().getType() == Material.CHEST || event.getBlockPlaced().getType() == Material.TRAPPED_CHEST) {
+            for (int i = 0; i < 4; i++) {
+                BlockFace face = NEIGHBOUR[i];
+                Block relative = event.getBlock().getRelative(face);
+                Location location = relative.getLocation();
+                if (Chests.getChestAt(location) != null) {
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+        }
+
         ItemStack itemStack = event.getItemInHand();
         ItemMeta meta = itemStack.getItemMeta();
         if (meta == null) return;
@@ -64,6 +78,7 @@ public class ChestListener implements Listener {
             Location location = event.getBlockPlaced().getLocation();
             Scheduler.get().runAt(location, task -> {
                 location.getWorld().getBlockAt(location).setType(Material.matchMaterial(chestType.getConfig().BLOCK_TYPE));
+                itemStack.setAmount(itemStack.getAmount() - 1);
             });
 
             int locationId = AxSellChestPlugin.getInstance().getDataHandler().getLocationId(location);
@@ -71,6 +86,7 @@ public class ChestListener implements Listener {
             Chest chest = new Chest(chestType, location, player.getUniqueId(), itemSold, moneyMade, locationId, config.AUTO_SELL, config.COLLECT_CHUNK, config.DELETE_UNSELLABLE, config.BANK, 0);
             AxSellChestPlugin.getInstance().getDataHandler().saveChest(chest);
             Chests.startTicking(location.getChunk());
+            player.sendMessage(StringUtils.formatToString(Messages.PREFIX + Messages.PLACE, Placeholder.parsed("placed", String.valueOf(placed)), Placeholder.parsed("max", String.valueOf(maxAmount))));
         });
     }
 
@@ -116,6 +132,7 @@ public class ChestListener implements Listener {
         event.setCancelled(true);
         event.setUseInteractedBlock(Event.Result.DENY);
         event.getPlayer().closeInventory();
+
         chest.getMenu().open(event.getPlayer());
     }
 }

@@ -2,17 +2,14 @@
 block: "chest"
 # The multiplier of this chest
 booster: 1.0
-# Can be gui or chest!
-shift-click-open: "gui"
 
 options:
-  sell-interval: 1 # Is in ticks
+  sell-interval: 10 # Is in ticks
   auto-sell: true
   collect-chunk: true
   delete-unsellable: true
   hologram: true
   bank: true
-  instant-collect: true
   charge: true
   # In minutes
   max-charge: 1440

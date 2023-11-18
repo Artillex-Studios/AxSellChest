@@ -1,6 +1,8 @@
 package com.artillexstudios.axsellchest.menu.actions;
 
+import com.artillexstudios.axsellchest.AxSellChestPlugin;
 import com.artillexstudios.axsellchest.chests.Chest;
+import com.artillexstudios.axsellchest.data.DataHandler;
 import com.artillexstudios.axsellchest.menu.actions.impl.ActionCharge;
 import com.artillexstudios.axsellchest.menu.actions.impl.ActionCloseMenu;
 import com.artillexstudios.axsellchest.menu.actions.impl.ActionConsoleCommand;
@@ -41,5 +43,9 @@ public class Actions {
 
             action.run(player, chest, arguments);
         }
+
+        DataHandler.QUEUE.submit(() -> {
+            AxSellChestPlugin.getInstance().getDataHandler().saveChest(chest);
+        });
     }
 }
