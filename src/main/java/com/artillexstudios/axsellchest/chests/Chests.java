@@ -1,7 +1,6 @@
 package com.artillexstudios.axsellchest.chests;
 
 import com.artillexstudios.axsellchest.utils.ChunkPos;
-import com.artillexstudios.axsellchest.utils.Math;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -27,7 +26,7 @@ public class Chests {
             for (int i = 0; i < chunksSize; i++) {
                 ChunkPos pos = chunks.get(i);
                 if (pos.getX() == x && pos.getZ() == z && pos.getWorldUUID() == worldUUID) {
-                    System.out.println("Started ticking!");
+                    System.out.println("Started ticking!" + x + " " + z);
                     pos.setTicking(true);
                     break;
                 }
@@ -47,6 +46,7 @@ public class Chests {
             for (int i = 0; i < chunksSize; i++) {
                 ChunkPos pos = chunks.get(i);
                 if (pos.getX() == x && pos.getZ() == z && pos.getWorldUUID() == worldUUID) {
+                    System.out.println("Stopped ticking! " + x + " " + z);
                     pos.setTicking(false);
                     break;
                 }
@@ -59,8 +59,8 @@ public class Chests {
         World world = location.getWorld();
         if (world == null) return;
 
-        int x = Math.round(location.getX()) >> 4;
-        int z = Math.round(location.getZ()) >> 4;
+        int x = (int) Math.round(location.getX()) >> 4;
+        int z = (int) Math.round(location.getZ()) >> 4;
         UUID worldUUID = world.getUID();
 
         synchronized (mutex) {
@@ -78,6 +78,7 @@ public class Chests {
             }
 
             if (chunkPos == null) {
+                System.out.println("Adding new position");
                 chunkPos = new ChunkPos(world, x, z);
                 chunks.add(chunkPos);
             }
@@ -90,9 +91,10 @@ public class Chests {
         Location location = chest.getLocation();
         World world = location.getWorld();
         if (world == null) return;
+        System.out.println("Removing!");
 
-        int x = Math.round(location.getX()) >> 4;
-        int z = Math.round(location.getZ()) >> 4;
+        int x = (int) Math.round(location.getX()) >> 4;
+        int z = (int) Math.round(location.getZ()) >> 4;
         UUID worldUUID = world.getUID();
 
         synchronized (mutex) {
@@ -128,34 +130,28 @@ public class Chests {
     public static Chest getChestAt(Location location) {
         World world = location.getWorld();
         if (world == null) return null;
-        System.out.println("CCCC");
 
         UUID worldUUID = world.getUID();
-        int x = Math.round(location.getX()) >> 4;
-        int z = Math.round(location.getZ()) >> 4;
+        int x = (int) Math.round(location.getX()) >> 4;
+        int z = (int) Math.round(location.getZ()) >> 4;
 
         ArrayList<ChunkPos> chunks = Chests.chunks;
         int chunksSize = chunks.size();
 
         for (int i = 0; i < chunksSize; i++) {
             ChunkPos pos = chunks.get(i);
-            System.out.println("DDDD");
             // There's no way that someone is interacting with a chest
             // In a chunk that's not tracked by us
-//            if (!pos.isTicking()) continue;
-            System.out.println("EEEE" + pos.getX() + " " + x + " " + pos.getZ() + " " + pos.getZ() + " " + pos.getWorldUUID() + " " + worldUUID);
+            if (!pos.isTicking()) continue;
 
             if (pos.getX() == x && pos.getZ() == z && pos.getWorldUUID().equals(worldUUID)) {
-                System.out.println("FFFF");
                 ArrayList<Chest> chests = pos.getChests();
                 int chestSize = chests.size();
 
                 for (int j = 0; j < chestSize; j++) {
                     Chest chest = chests.get(j);
-                    System.out.println("AAAA");
                     if (!chest.getLocation().equals(location)) continue;
 
-                    System.out.println("BBBB");
                     return chest;
                 }
 
@@ -178,7 +174,7 @@ public class Chests {
                 ArrayList<Chest> chests = pos.getChests();
                 int chestSize = chests.size();
                 for (int j = 0; j < chestSize; j++) {
-                    Chest chest = chests.get(i);
+                    Chest chest = chests.get(j);
                     chest.updateHologram();
                 }
             }

@@ -4,7 +4,6 @@ import com.artillexstudios.axsellchest.chests.Chest;
 import com.artillexstudios.axsellchest.chests.ChestType;
 import com.artillexstudios.axsellchest.data.DataHandler;
 import com.artillexstudios.axsellchest.utils.FileUtils;
-import com.artillexstudios.axsellchest.utils.Math;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -147,9 +146,9 @@ public class H2DataHandler implements DataHandler {
         }
 
         try (PreparedStatement preparedStatement = connection.prepareStatement("MERGE INTO `axsellchest_locations`(`x`, `y`, `z`, `world_id`) KEY(`x`, `y`, `z`, `world_id`) VALUES (?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setInt(1, Math.round(location.getX()));
-            preparedStatement.setInt(2, Math.round(location.getY()));
-            preparedStatement.setInt(3, Math.round(location.getZ()));
+            preparedStatement.setInt(1, (int) Math.round(location.getX()));
+            preparedStatement.setInt(2, (int) Math.round(location.getY()));
+            preparedStatement.setInt(3, (int) Math.round(location.getZ()));
             preparedStatement.setInt(4, worldId);
             preparedStatement.executeUpdate();
 

@@ -11,7 +11,7 @@ public class ChunkPos {
     private final UUID worldUUID;
     private final int x;
     private final int z;
-    private volatile boolean ticking = false;
+    private boolean ticking = false;
 
     public ChunkPos(World world, int x, int z) {
         this.worldUUID = world.getUID();
@@ -51,6 +51,7 @@ public class ChunkPos {
 
     public void setTicking(boolean ticking) {
         this.ticking = ticking;
+        System.out.println("Set ticking to: " + ticking);
 
         ArrayList<Chest> chests = this.chests;
         int size = chests.size();

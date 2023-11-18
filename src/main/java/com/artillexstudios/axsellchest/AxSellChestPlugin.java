@@ -55,10 +55,10 @@ public class AxSellChestPlugin extends AxPlugin {
         reload();
 
         // Retroactively load the chests in worlds that have already loaded
-        DataHandler.QUEUE.submit(() -> {
-            List<World> worlds = Bukkit.getWorlds();
-            int worldsSize = worlds.size();
+        List<World> worlds = Bukkit.getWorlds();
+        int worldsSize = worlds.size();
 
+        DataHandler.QUEUE.submit(() -> {
             for (int i = 0; i < worldsSize; i++) {
                 World world = worlds.get(i);
 

@@ -23,7 +23,6 @@ public class ChestTypes {
         TYPES.clear();
 
         if (CHEST_TYPES_FOLDER.mkdirs()) {
-            System.out.println("MKDIRS");
             FileUtils.copyFromResource("chests");
         }
 
@@ -35,6 +34,7 @@ public class ChestTypes {
                     .replace(".yaml", ""));
 
             if (type == null) {
+                System.out.println("Loaded new chest type!");
                 new ChestType(file);
             } else {
                 type.reload();
@@ -49,6 +49,7 @@ public class ChestTypes {
                 removedTypes.add(entry.getValue());
             }
 
+            System.out.println("Returning: " + !contains);
             return !contains;
         });
 

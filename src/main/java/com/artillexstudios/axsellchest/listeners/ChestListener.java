@@ -19,9 +19,11 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -103,19 +105,17 @@ public class ChestListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerInteractEvent(PlayerInteractEvent event) {
-        System.out.println("A");
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         Block clickedBlock = event.getClickedBlock();
         if (clickedBlock == null) return;
-        System.out.println("B");
         if (clickedBlock.getType() == Material.AIR) return;
-        System.out.println("C");
 
         Chest chest = Chests.getChestAt(clickedBlock.getLocation());
         if (chest == null) return;
-        System.out.println("D");
 
+        event.setCancelled(true);
+        event.setUseInteractedBlock(Event.Result.DENY);
         event.getPlayer().closeInventory();
         chest.getMenu().open(event.getPlayer());
-        System.out.println("OPENING MENU!");
     }
 }

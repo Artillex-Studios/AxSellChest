@@ -3,9 +3,11 @@ package com.artillexstudios.axsellchest.commands;
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axsellchest.AxSellChestPlugin;
 import com.artillexstudios.axsellchest.chests.ChestType;
+import com.artillexstudios.axsellchest.chests.Chests;
 import com.artillexstudios.axsellchest.config.impl.Messages;
 import com.artillexstudios.axsellchest.utils.ItemBuilder;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import org.bukkit.Chunk;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import revxrsal.commands.annotation.Command;
@@ -33,5 +35,12 @@ public class AxSellChestCommand {
     @CommandPermission("axsellchest.command.statistics")
     public void stats(CommandSender sender) {
 
+    }
+
+    @Subcommand("startticking")
+    @CommandPermission("axsellchest.command.startticking")
+    public void startTicking(Player sender) {
+        Chunk chunk = sender.getLocation().getChunk();
+        Chests.startTicking(chunk);
     }
 }

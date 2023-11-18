@@ -10,13 +10,13 @@ public class ShopGUIPlusIntegration implements PricesIntegration {
 
     @Override
     public double getPrice(OfflinePlayer player, ItemStack itemStack, int amount) {
-        itemStack.setAmount(1);
-
         Player onlinePlayer = player.getPlayer();
         if (onlinePlayer != null) {
-            return ShopGuiPlusApi.getItemStackPriceSell(onlinePlayer, itemStack) * amount;
+            double price = ShopGuiPlusApi.getItemStackPriceSell(onlinePlayer, itemStack) / itemStack.getAmount();
+            return price == -1 ? 0 : price * amount;
         }
 
-        return ShopGuiPlusApi.getItemStackPriceSell(itemStack) * amount;
+        double price = ShopGuiPlusApi.getItemStackPriceSell(itemStack) / itemStack.getAmount();
+        return price == -1 ? 0 : price * amount;
     }
 }

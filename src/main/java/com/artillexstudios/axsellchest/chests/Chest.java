@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.UUID;
 
 public class Chest {
@@ -66,13 +65,6 @@ public class Chest {
         menu = new Menu(this);
 
         Chests.load(this);
-
-        Scheduler.get().runAt(location, task -> {
-            BlockState state = location.getBlock().getState();
-            if (state instanceof Container container) {
-                inventory = container.getInventory();
-            }
-        });
     }
 
     public void tick() {
@@ -80,12 +72,9 @@ public class Chest {
         if (this.type.getConfig().CHARGE && charge < System.currentTimeMillis()) return;
         if (ChestTicker.getTick() % type.getChestTick() != 0) return;
 
-        System.out.println("Yes");
         double moneyMade = 0;
         if (autoSell) {
-            System.out.println("Autosell");
             if (collectChunk) {
-                System.out.println("Collectchunk");
                 moneyMade += instantCollectAndSell();
             }
 
@@ -98,6 +87,7 @@ public class Chest {
 
         moneyMade *= this.type.getConfig().BOOSTER;
 
+        if (moneyMade == 0) return;
         EconomyIntegration.getInstance().give(owner, moneyMade);
         System.out.printf("Oreo %s", moneyMade);
     }
@@ -105,7 +95,7 @@ public class Chest {
     public void updateHologram() {
         if (!this.type.getConfig().HOLOGRAM) return;
         if (hologram == null) {
-            hologram = HologramFactory.get().spawnHologram(location.clone().add(0, this.type.getConfig().HOLOGRAM_HEIGHT, 0), "chest-" + Serializers.LOCATION.serialize(this.location));
+            hologram = HologramFactory.get().spawnHologram(location.clone().add(0, this.type.getConfig().HOLOGRAM_HEIGHT, 0), "chest-" + Serializers.LOCATION.serialize(this.location), 0.3);
 
             List<String> lines = this.type.getConfig().HOLOGRAM_CONTENT;
             int contentSize = lines.size();
@@ -117,6 +107,8 @@ public class Chest {
                         Placeholder.parsed("owner", ownerName)
                 ));
             }
+
+            return;
         }
 
         List<String> lines = this.type.getConfig().HOLOGRAM_CONTENT;
@@ -149,7 +141,7 @@ public class Chest {
             int amount = StackerIntegration.getInstance().getAmount(item);
 
             double itemPrice = PricesIntegration.getInstance().getPrice(this.owner, itemStack, amount);
-            if (itemPrice == 0) {
+            if (itemPrice <= 0) {
                 continue;
             }
 
@@ -166,17 +158,19 @@ public class Chest {
         if (inventory == null) return 0;
         if (inventory.isEmpty()) return 0;
 
-        ListIterator<ItemStack> iterator = inventory.iterator();
         double price = 0;
-        while (iterator.hasNext()) {
-            ItemStack itemStack = iterator.next();
+        ItemStack[] contents = inventory.getContents();
+        int contentSize = contents.length;
+
+        for (int i = 0; i < contentSize; i++) {
+            ItemStack itemStack = contents[i];
             if (itemStack == null || itemStack.getType().isAir()) continue;
 
             int amount = itemStack.getAmount();
             double itemPrice = PricesIntegration.getInstance().getPrice(this.owner, itemStack, amount);
-            if (itemPrice == 0) continue;
+            if (itemPrice <= 0) continue;
 
-            iterator.remove();
+            itemStack.setAmount(0);
             price += itemPrice;
         }
 
@@ -195,7 +189,7 @@ public class Chest {
             int amount = StackerIntegration.getInstance().getAmount(item);
 
             double itemPrice = PricesIntegration.getInstance().getPrice(this.owner, itemStack, amount);
-            if (itemPrice == 0) {
+            if (itemPrice <= 0) {
                 continue;
             }
 
@@ -321,12 +315,19 @@ public class Chest {
     }
 
     public void onLoad() {
-
+        Scheduler.get().runAt(location, task -> {
+            BlockState state = location.getBlock().getState();
+            if (state instanceof Container container) {
+                this.inventory = container.getInventory();
+            }
+        });
     }
 
     public void onReload() {
-        this.hologram.remove();
-        this.hologram = null;
+        if (this.hologram != null) {
+            this.hologram.remove();
+            this.hologram = null;
+        }
     }
 
     public void onUnload() {
