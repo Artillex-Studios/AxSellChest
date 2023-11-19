@@ -11,6 +11,7 @@ import com.artillexstudios.axsellchest.integrations.prices.PricesIntegration;
 import com.artillexstudios.axsellchest.integrations.stacker.StackerIntegration;
 import com.artillexstudios.axsellchest.menu.Menu;
 import com.artillexstudios.axsellchest.utils.NMSUtils;
+import com.artillexstudios.axsellchest.utils.PlaceholderUtils;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -56,7 +57,8 @@ public class Chest {
         this.type = type;
         this.location = location;
         this.owner = Bukkit.getOfflinePlayer(ownerUUID);
-        this.ownerName = owner.getName();
+        String ownerName = owner.getName();
+        this.ownerName = ownerName == null ? "---" : ownerName;
         this.itemsSold = itemsSold;
         this.moneyMade = moneyMade;
         this.locationId = locationId;
@@ -116,7 +118,7 @@ public class Chest {
                 String line = lines.get(i);
                 hologram.addLine(StringUtils.format(line, Placeholder.parsed("items_sold", String.valueOf(itemsSold)),
                         Placeholder.parsed("money_made", String.valueOf(moneyMade)),
-                        Placeholder.parsed("charge", System.currentTimeMillis() - charge > System.currentTimeMillis() ? StringUtils.formatTime(System.currentTimeMillis() - charge) : "00:00:00"),
+                        Placeholder.parsed("charge", charge > System.currentTimeMillis() ? StringUtils.formatTime(charge - System.currentTimeMillis()) : "00:00:00"),
                         Placeholder.parsed("owner", ownerName)
                 ));
             }
@@ -124,14 +126,17 @@ public class Chest {
             return;
         }
 
+
         List<String> lines = this.type.getConfig().HOLOGRAM_CONTENT;
         int contentSize = lines.size();
 
         for (int i = 0; i < contentSize; i++) {
             String line = lines.get(i);
+            if (!PlaceholderUtils.containsPlaceholders(line)) continue;
+
             hologram.setLine(i, StringUtils.format(line, Placeholder.parsed("items_sold", String.valueOf(itemsSold)),
                     Placeholder.parsed("money_made", String.valueOf(moneyMade)),
-                    Placeholder.parsed("charge", StringUtils.formatTime(System.currentTimeMillis() - charge)),
+                    Placeholder.parsed("charge", charge > System.currentTimeMillis() ? StringUtils.formatTime(charge - System.currentTimeMillis()) : "00:00:00"),
                     Placeholder.parsed("owner", ownerName)
             ));
         }
@@ -335,16 +340,16 @@ public class Chest {
         return this.ticking;
     }
 
+    public void setTicking(boolean ticking) {
+        this.ticking = ticking;
+    }
+
     public boolean isBroken() {
         return broken;
     }
 
     public void setBroken(boolean broken) {
         this.broken = broken;
-    }
-
-    public void setTicking(boolean ticking) {
-        this.ticking = ticking;
     }
 
     public void onLoad(Chunk chunk) {

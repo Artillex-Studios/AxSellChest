@@ -6,6 +6,7 @@ import com.artillexstudios.axsellchest.chests.Chest;
 import com.artillexstudios.axsellchest.chests.ChestType;
 import com.artillexstudios.axsellchest.chests.Chests;
 import com.artillexstudios.axsellchest.config.impl.Messages;
+import com.artillexstudios.axsellchest.converter.Converter;
 import com.artillexstudios.axsellchest.utils.ItemBuilder;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Chunk;
@@ -63,5 +64,19 @@ public class AxSellChestCommand {
     public void startTicking(Player sender) {
         Chunk chunk = sender.getLocation().getChunk();
         Chests.startTicking(chunk);
+    }
+
+    @Subcommand("convert")
+    @CommandPermission("axsellchest.command.convert")
+    public void convert(CommandSender sender, String converter) {
+        switch (converter) {
+            case "voidchest" -> {
+                Converter.CONVERTERS.get(0).convert();
+            }
+            case "voidchestv2" -> {
+                System.out.println("Converter!");
+                Converter.CONVERTERS.get(1).convert();
+            }
+        }
     }
 }

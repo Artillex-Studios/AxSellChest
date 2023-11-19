@@ -12,8 +12,10 @@ public class ActionCharge extends Action {
 
     @Override
     public void run(Player player, Chest chest, String arguments) {
-        if (chest.getCharge() + Long.parseLong(arguments) * 1000 > chest.getType().getConfig().MAX_CHARGE * 60L) {
-            chest.setCharge(chest.getType().getConfig().MAX_CHARGE);
+        long chargeSeconds = (chest.getCharge() - System.currentTimeMillis()) / 1000;
+
+        if (chargeSeconds + Long.parseLong(arguments) > chest.getType().getConfig().MAX_CHARGE * 60L) {
+            chest.setCharge(System.currentTimeMillis() + chest.getType().getConfig().MAX_CHARGE * 60L * 1000L);
             return;
         }
 

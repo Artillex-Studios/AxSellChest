@@ -73,14 +73,18 @@ public class ChestListener implements Listener {
         meta.getPersistentDataContainer().set(Keys.PLACED, PersistentDataType.BYTE, (byte) 1);
         itemStack.setItemMeta(meta);
         DataHandler.QUEUE.submit(() -> {
+            Location location = event.getBlockPlaced().getLocation();
             int placed = AxSellChestPlugin.getInstance().getDataHandler().getChests(player.getUniqueId());
 
             if (placed > maxAmount) {
                 player.sendMessage(StringUtils.formatToString(Messages.PREFIX + Messages.PLACE_LIMIT_REACHED, Placeholder.parsed("placed", String.valueOf(placed)), Placeholder.parsed("max", String.valueOf(maxAmount))));
+                Scheduler.get().runAt(location, task -> {
+                    meta.getPersistentDataContainer().remove(Keys.PLACED);
+                    itemStack.setItemMeta(meta);
+                });
                 return;
             }
 
-            Location location = event.getBlockPlaced().getLocation();
             Scheduler.get().runAt(location, task -> {
                 location.getWorld().getBlockAt(location).setType(Material.matchMaterial(chestType.getConfig().BLOCK_TYPE));
                 meta.getPersistentDataContainer().remove(Keys.PLACED);
@@ -93,7 +97,7 @@ public class ChestListener implements Listener {
             Chest chest = new Chest(chestType, location, player.getUniqueId(), itemSold, moneyMade, locationId, config.AUTO_SELL, config.COLLECT_CHUNK, config.DELETE_UNSELLABLE, config.BANK, 0);
             AxSellChestPlugin.getInstance().getDataHandler().saveChest(chest);
             Chests.startTicking(location.getChunk());
-            player.sendMessage(StringUtils.formatToString(Messages.PREFIX + Messages.PLACE, Placeholder.parsed("placed", String.valueOf(placed)), Placeholder.parsed("max", String.valueOf(maxAmount))));
+            player.sendMessage(StringUtils.formatToString(Messages.PREFIX + Messages.PLACE, Placeholder.parsed("placed", String.valueOf(placed + 1)), Placeholder.parsed("max", String.valueOf(maxAmount))));
         });
     }
 

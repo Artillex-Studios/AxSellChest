@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class ChestTypes {
@@ -64,7 +65,7 @@ public class ChestTypes {
     }
 
     public static ChestType valueOf(String name) {
-        return TYPES.get(name);
+        return TYPES.get(name.toLowerCase(Locale.ENGLISH));
     }
 
     public static void loadForWorld(World world) {
@@ -79,7 +80,7 @@ public class ChestTypes {
             return;
         }
 
-        TYPES.put(chestType.getName(), chestType);
+        TYPES.put(chestType.getName().toLowerCase(Locale.ENGLISH), chestType);
         DataHandler.QUEUE.submit(() -> {
             AxSellChestPlugin.getInstance().getDataHandler().insertType(chestType);
         });

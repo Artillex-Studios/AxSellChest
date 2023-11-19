@@ -10,13 +10,13 @@ import java.util.Locale;
 
 public interface BankIntegration extends Integration {
 
-    boolean deposit(OfflinePlayer player, double amount);
-
     Companion COMPANION = new Companion();
 
     static BankIntegration getInstance() {
         return COMPANION.integration;
     }
+
+    boolean deposit(OfflinePlayer player, double amount);
 
     class Companion {
         BankIntegration integration;
@@ -26,13 +26,14 @@ public interface BankIntegration extends Integration {
                 case "superiorskyblock2" -> {
                     if (Bukkit.getPluginManager().getPlugin("SuperiorSkyBlock2") != null) {
                         integration = new SuperiorSkyBlockIntegration();
+                    } else {
+                        integration = (player, amount) -> false;
                     }
                 }
+                default -> integration = (player, amount) -> false;
             }
 
-            if (integration != null) {
-                integration.reload();
-            }
+            integration.reload();
         }
     }
 }
