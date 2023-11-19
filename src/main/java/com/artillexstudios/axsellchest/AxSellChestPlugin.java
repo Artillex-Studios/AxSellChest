@@ -11,6 +11,7 @@ import com.artillexstudios.axsellchest.config.impl.Config;
 import com.artillexstudios.axsellchest.config.impl.Messages;
 import com.artillexstudios.axsellchest.data.DataHandler;
 import com.artillexstudios.axsellchest.data.impl.H2DataHandler;
+import com.artillexstudios.axsellchest.integrations.bank.BankIntegration;
 import com.artillexstudios.axsellchest.integrations.economy.EconomyIntegration;
 import com.artillexstudios.axsellchest.integrations.prices.PricesIntegration;
 import com.artillexstudios.axsellchest.integrations.stacker.StackerIntegration;
@@ -86,6 +87,15 @@ public class AxSellChestPlugin extends AxPlugin {
 
     @Override
     public void disable() {
+        List<Chest> chests = Chests.getChests();
+        int chestSize = chests.size();
+
+        for (int i = 0; i < chestSize; i++) {
+            Chest chest = chests.get(i);
+            chest.setBroken(true);
+            chest.getMenu().close();
+        }
+
         dataHandler.disable();
         DataHandler.QUEUE.stop();
     }
@@ -104,6 +114,7 @@ public class AxSellChestPlugin extends AxPlugin {
         EconomyIntegration.COMPANION.reload();
         StackerIntegration.COMPANION.reload();
         PricesIntegration.COMPANION.reload();
+        BankIntegration.COMPANION.reload();
     }
 
     private void loadCommand() {

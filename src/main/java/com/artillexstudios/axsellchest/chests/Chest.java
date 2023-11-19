@@ -5,6 +5,7 @@ import com.artillexstudios.axapi.hologram.HologramFactory;
 import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.serializers.Serializers;
 import com.artillexstudios.axapi.utils.StringUtils;
+import com.artillexstudios.axsellchest.integrations.bank.BankIntegration;
 import com.artillexstudios.axsellchest.integrations.economy.EconomyIntegration;
 import com.artillexstudios.axsellchest.integrations.prices.PricesIntegration;
 import com.artillexstudios.axsellchest.integrations.stacker.StackerIntegration;
@@ -39,6 +40,7 @@ public class Chest {
     private final int locationId;
     private final Menu menu;
     private boolean ticking = false;
+    private boolean broken = false;
     private double moneyMade;
     private long itemsSold;
     private boolean autoSell;
@@ -90,7 +92,15 @@ public class Chest {
 
         moneyMade *= this.type.getConfig().BOOSTER;
 
-        if (moneyMade == 0) return;
+        if (moneyMade <= 0) return;
+        if (bank) {
+            if (!BankIntegration.getInstance().deposit(owner, moneyMade)) {
+                EconomyIntegration.getInstance().give(owner, moneyMade);
+                this.moneyMade += moneyMade;
+                return;
+            }
+        }
+
         EconomyIntegration.getInstance().give(owner, moneyMade);
         this.moneyMade += moneyMade;
     }
@@ -128,7 +138,9 @@ public class Chest {
     }
 
     public void remove() {
+        this.broken = true;
         this.ticking = false;
+
         Chests.remove(this);
         if (this.hologram != null) {
             this.hologram.remove();
@@ -323,12 +335,20 @@ public class Chest {
         return this.ticking;
     }
 
+    public boolean isBroken() {
+        return broken;
+    }
+
+    public void setBroken(boolean broken) {
+        this.broken = broken;
+    }
+
     public void setTicking(boolean ticking) {
         this.ticking = ticking;
     }
 
-    public void onLoad() {
-        chunk = location.getChunk();
+    public void onLoad(Chunk chunk) {
+        this.chunk = chunk;
 
         Scheduler.get().runAt(location, task -> {
             BlockState state = location.getBlock().getState();

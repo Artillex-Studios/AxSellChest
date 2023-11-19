@@ -23,6 +23,12 @@ public class Config extends AbstractConfig {
             """)
     public static String PRICES_INTEGRATION = "ShopGUIPlus";
 
+    @Key("integrations.bank")
+    @Comment("""
+            Can be SuperiorSkyBlock
+            """)
+    public static String BANK_INTEGRATION = "SuperiorSkyBlock2";
+
     @Key("autosave-minutes")
     @Comment("""
             How often should we save data about chests?

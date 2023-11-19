@@ -10,6 +10,7 @@ import dev.triumphteam.gui.components.GuiType;
 import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.GuiItem;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -64,6 +65,16 @@ public class Menu {
 
     public void open(Player player) {
         gui.open(player);
+    }
+
+    public void close() {
+        List<HumanEntity> viewers = gui.getInventory().getViewers();
+        int viewersSize = viewers.size();
+
+        for (int i = 0; i < viewersSize; i++) {
+            HumanEntity viewer = viewers.get(i);
+            viewer.closeInventory();
+        }
     }
 
     public List<Integer> slots(@NotNull List<String> slotString) {

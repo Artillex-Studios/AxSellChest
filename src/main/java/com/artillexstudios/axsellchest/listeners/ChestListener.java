@@ -67,6 +67,11 @@ public class ChestListener implements Listener {
         int maxAmount = PermissionUtils.getChestLimit(player);
         event.setCancelled(true);
 
+        // We don't want the item to be placed if it's already being placed
+        if (meta.getPersistentDataContainer().has(Keys.PLACED, PersistentDataType.BYTE)) return;
+
+        meta.getPersistentDataContainer().set(Keys.PLACED, PersistentDataType.BYTE, (byte) 1);
+        itemStack.setItemMeta(meta);
         DataHandler.QUEUE.submit(() -> {
             int placed = AxSellChestPlugin.getInstance().getDataHandler().getChests(player.getUniqueId());
 
@@ -78,6 +83,8 @@ public class ChestListener implements Listener {
             Location location = event.getBlockPlaced().getLocation();
             Scheduler.get().runAt(location, task -> {
                 location.getWorld().getBlockAt(location).setType(Material.matchMaterial(chestType.getConfig().BLOCK_TYPE));
+                meta.getPersistentDataContainer().remove(Keys.PLACED);
+                itemStack.setItemMeta(meta);
                 itemStack.setAmount(itemStack.getAmount() - 1);
             });
 
@@ -99,6 +106,11 @@ public class ChestListener implements Listener {
         Chest chest = Chests.getChestAt(location);
 
         if (chest != null) {
+            if (chest.isBroken()) {
+                event.setCancelled(true);
+                return;
+            }
+
             event.setDropItems(false);
             ItemStack item = chest.getType().getItem(chest.getItemsSold(), chest.getMoneyMade());
 
@@ -128,6 +140,7 @@ public class ChestListener implements Listener {
 
         Chest chest = Chests.getChestAt(clickedBlock.getLocation());
         if (chest == null) return;
+        if (chest.isBroken()) return;
 
         event.setCancelled(true);
         event.setUseInteractedBlock(Event.Result.DENY);

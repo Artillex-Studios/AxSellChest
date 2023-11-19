@@ -51,13 +51,13 @@ public class NMSUtils {
     public static boolean isEmpty(Inventory inventory) {
         try {
             return isEmpty0(inventory);
-        } catch (Throwable throwable) {
-            LOGGER.error("An unexpected error occurred while checking if inventory is empty!", throwable);
+        } catch (Exception exception) {
+            LOGGER.error("An unexpected error occurred while checking if inventory is empty!", exception);
             return false;
         }
     }
 
-    private static boolean isEmpty0(Inventory inventory) throws Throwable {
+    private static boolean isEmpty0(Inventory inventory) throws Exception {
         Object container = getInventoryMethod.invoke(inventory);
 
         java.util.List<Object> contents = (java.util.List<Object>) accessor.get(container);
@@ -75,6 +75,7 @@ public class NMSUtils {
         return true;
     }
 
+    // A ridiculously fast, but unsafe implementation for accessing fields
     static class FieldAccessor {
         private static sun.misc.Unsafe unsafe;
 

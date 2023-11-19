@@ -1,6 +1,7 @@
 package com.artillexstudios.axsellchest.utils;
 
 import com.artillexstudios.axsellchest.chests.Chest;
+import org.bukkit.Chunk;
 import org.bukkit.World;
 
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ public class ChunkPos {
         return this.ticking;
     }
 
-    public void setTicking(boolean ticking) {
+    public void setTicking(boolean ticking, Chunk chunk) {
         this.ticking = ticking;
 
         ArrayList<Chest> chests = this.chests;
@@ -60,7 +61,7 @@ public class ChunkPos {
             chest.setTicking(ticking);
 
             if (ticking) {
-                chest.onLoad();
+                chest.onLoad(chunk);
             } else {
                 chest.onUnload();
             }

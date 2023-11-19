@@ -26,7 +26,7 @@ public class Chests {
             for (int i = 0; i < chunksSize; i++) {
                 ChunkPos pos = chunks.get(i);
                 if (pos.getX() == x && pos.getZ() == z && pos.getWorldUUID() == worldUUID) {
-                    pos.setTicking(true);
+                    pos.setTicking(true, chunk);
                     break;
                 }
             }
@@ -45,7 +45,7 @@ public class Chests {
             for (int i = 0; i < chunksSize; i++) {
                 ChunkPos pos = chunks.get(i);
                 if (pos.getX() == x && pos.getZ() == z && pos.getWorldUUID() == worldUUID) {
-                    pos.setTicking(false);
+                    pos.setTicking(false, chunk);
                     break;
                 }
             }
