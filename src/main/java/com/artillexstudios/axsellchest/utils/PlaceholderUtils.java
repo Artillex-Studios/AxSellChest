@@ -3,7 +3,7 @@ package com.artillexstudios.axsellchest.utils;
 import java.util.List;
 
 public class PlaceholderUtils {
-    private static final List<String> PLACEHOLDERS = List.of("<items_sold>", "<money_made>", "<charge>", "<owner>");
+    private static final List<String> PLACEHOLDERS = List.of("<items_sold>", "<money_made>", "<charge>");
     private static final int placeholderSize = PLACEHOLDERS.size();
 
     public static boolean containsPlaceholders(String string) {

@@ -46,6 +46,9 @@ public class Config extends AbstractConfig {
     @Key("place-in-inventory")
     public static boolean PLACE_IN_INVENTORY = true;
 
+    @Key("sell-messages.interval")
+    public static long SELL_MESSAGE_INTERVAL = -1;
+
     private static final Config CONFIG = new Config();
 
     public static void reload() {
