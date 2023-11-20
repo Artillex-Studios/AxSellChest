@@ -1,6 +1,7 @@
 package com.artillexstudios.axsellchest;
 
 import com.artillexstudios.axapi.AxPlugin;
+import com.artillexstudios.axapi.utils.Version;
 import com.artillexstudios.axsellchest.chests.Chest;
 import com.artillexstudios.axsellchest.chests.ChestTicker;
 import com.artillexstudios.axsellchest.chests.ChestType;
@@ -25,6 +26,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import revxrsal.commands.bukkit.BukkitCommandHandler;
 
@@ -33,6 +35,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class AxSellChestPlugin extends AxPlugin {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AxSellChestPlugin.class);
     private static AxSellChestPlugin INSTANCE;
     private DataHandler dataHandler;
 
@@ -53,6 +56,12 @@ public class AxSellChestPlugin extends AxPlugin {
 
     @Override
     public void enable() {
+        if (Version.getServerVersion().ordinal() > Version.v1_17.ordinal()) {
+            LOGGER.error("Your server version is not supported! Disabling!");
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
+
         INSTANCE = this;
         this.dataHandler = new H2DataHandler();
         this.dataHandler.setup();
