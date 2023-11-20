@@ -19,9 +19,12 @@ import com.artillexstudios.axsellchest.library.Libraries;
 import com.artillexstudios.axsellchest.listeners.ChestListener;
 import com.artillexstudios.axsellchest.listeners.ChunkListener;
 import com.artillexstudios.axsellchest.listeners.WorldListener;
+import com.artillexstudios.axsellchest.utils.Keys;
 import net.byteflux.libby.BukkitLibraryManager;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.slf4j.LoggerFactory;
 import revxrsal.commands.bukkit.BukkitCommandHandler;
 
@@ -95,6 +98,14 @@ public class AxSellChestPlugin extends AxPlugin {
             Chest chest = chests.get(i);
             chest.setBroken(true);
             chest.getMenu().close();
+        }
+
+        for (ItemStack item : ChestListener.getItems()) {
+            ItemMeta meta = item.getItemMeta();
+            if (meta == null) continue;
+
+            meta.getPersistentDataContainer().remove(Keys.PLACED);
+            item.setItemMeta(meta);
         }
 
         dataHandler.disable();

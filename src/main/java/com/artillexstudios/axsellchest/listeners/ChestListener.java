@@ -32,10 +32,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class ChestListener implements Listener {
     private static final BlockFace[] NEIGHBOUR = new BlockFace[]{BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST};
+    private static final List<ItemStack> ITEMS = new ArrayList<>();
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockPlaceEvent(BlockPlaceEvent event) {
@@ -71,6 +74,7 @@ public class ChestListener implements Listener {
         if (meta.getPersistentDataContainer().has(Keys.PLACED, PersistentDataType.BYTE)) return;
 
         meta.getPersistentDataContainer().set(Keys.PLACED, PersistentDataType.BYTE, (byte) 1);
+        ITEMS.add(itemStack);
         itemStack.setItemMeta(meta);
         DataHandler.QUEUE.submit(() -> {
             Location location = event.getBlockPlaced().getLocation();
@@ -81,6 +85,7 @@ public class ChestListener implements Listener {
                 Scheduler.get().runAt(location, task -> {
                     meta.getPersistentDataContainer().remove(Keys.PLACED);
                     itemStack.setItemMeta(meta);
+                    ITEMS.remove(itemStack);
                 });
                 return;
             }
@@ -90,6 +95,7 @@ public class ChestListener implements Listener {
                 meta.getPersistentDataContainer().remove(Keys.PLACED);
                 itemStack.setItemMeta(meta);
                 itemStack.setAmount(itemStack.getAmount() - 1);
+                ITEMS.remove(itemStack);
             });
 
             int locationId = AxSellChestPlugin.getInstance().getDataHandler().getLocationId(location);
@@ -151,5 +157,9 @@ public class ChestListener implements Listener {
         event.getPlayer().closeInventory();
 
         chest.getMenu().open(event.getPlayer());
+    }
+
+    public static List<ItemStack> getItems() {
+        return ITEMS;
     }
 }

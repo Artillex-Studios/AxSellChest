@@ -10,7 +10,7 @@ public class PlaceholderUtils {
         for (int i = 0; i < placeholderSize; i++) {
             String placeholder = PLACEHOLDERS.get(i);
 
-            if (placeholder.contains(string)) {
+            if (string.contains(placeholder)) {
                 return true;
             }
         }

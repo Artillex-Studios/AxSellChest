@@ -229,7 +229,6 @@ public class Chest {
                 // Remove the item only if it can be sold
                 item.remove();
             } else {
-                // TODO: Test
                 StackerIntegration.getInstance().setAmount(item, itemStack.getAmount());
             }
         }
