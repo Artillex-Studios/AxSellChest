@@ -61,6 +61,7 @@ public class NMSUtils {
         Object container = getInventoryMethod.invoke(inventory);
 
         java.util.List<Object> contents = (java.util.List<Object>) accessor.get(container);
+        if (contents == null) return true;
         int contentSize = contents.size();
 
         for (int i = 0; i < contentSize; i++) {

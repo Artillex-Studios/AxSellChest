@@ -52,7 +52,7 @@ public class ChestConfig extends AbstractConfig {
     @Key("hologram.content")
     public List<String> HOLOGRAM_CONTENT = List.of();
     @Key("item")
-    public Map<Object, Object> ITEM_SECTION = Map.of();
+    public Map<Object, Object> ITEM_SECTION = null;
 
     private final String fileName;
 

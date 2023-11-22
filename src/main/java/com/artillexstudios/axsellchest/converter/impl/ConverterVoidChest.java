@@ -21,8 +21,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ConverterVoidChest implements Converter {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConverterVoidChest.class);
@@ -34,52 +35,51 @@ public class ConverterVoidChest implements Converter {
 
     @Override
     public void convert() {
-        try {
-            Files.walk(FileUtils.PLUGIN_DIRECTORY.resolve("../VoidChest/PlayerData/")).forEach((path) -> {
-                File file = path.toFile();
-                YamlConfiguration config = new YamlConfiguration();
-                try {
-                    config.load(file);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                } catch (InvalidConfigurationException e) {
-                    throw new RuntimeException(e);
-                }
+        File[] files = new File(FileUtils.PLUGIN_DIRECTORY.toFile(), "../VoidChest/voiddata/").listFiles();
+        if (files == null) return;
 
-                String fileName = FilenameUtils.removeExtension(file.getName());
-                UUID ownerUUId = UUID.fromString(fileName);
-                ConfigurationSection section = config.getConfigurationSection("chests");
-                if (section == null) return;
+        AtomicInteger integer = new AtomicInteger();
+        Arrays.stream(files).forEach((path) -> {
+            YamlConfiguration config = new YamlConfiguration();
+            try {
+                config.load(path);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (InvalidConfigurationException e) {
+                throw new RuntimeException(e);
+            }
 
-                for (String chests : section.getKeys(false)) {
-                    String type = section.getString(chests + ".name");
-                    String world = section.getString(chests + ".location.world");
-                    double x = section.getDouble(chests + ".location.x");
-                    double y = section.getDouble(chests + ".location.y");
-                    double z = section.getDouble(chests + ".location.z");
-                    double money = section.getDouble(chests + ".money");
-                    long itemsSold = section.getLong(chests + ".items-sold");
+            String fileName = FilenameUtils.removeExtension(path.getName());
+            UUID ownerUUId = UUID.fromString(fileName);
+            ConfigurationSection section = config.getConfigurationSection("chests");
+            if (section == null) return;
 
-                    if (world == null || type == null) return;
-                    World bukkitWorld = Bukkit.getWorld(world);
+            for (String chests : section.getKeys(false)) {
+                String type = section.getString(chests + ".name");
+                String world = section.getString(chests + ".location.world");
+                double x = section.getDouble(chests + ".location.x");
+                double y = section.getDouble(chests + ".location.y");
+                double z = section.getDouble(chests + ".location.z");
+                double money = section.getDouble(chests + ".money");
+                long itemsSold = section.getLong(chests + ".items-sold");
 
-                    Location location = new Location(bukkitWorld, x, y, z);
-                    ChestType chestType = ChestTypes.valueOf(type);
-                    if (chestType == null) return;
+                if (world == null || type == null) return;
+                World bukkitWorld = Bukkit.getWorld(world);
 
-                    DataHandler.QUEUE.submit(() -> {
-                        int locationId = AxSellChestPlugin.getInstance().getDataHandler().getLocationId(location);
-                        ChestConfig chestConfig = chestType.getConfig();
+                Location location = new Location(bukkitWorld, x, y, z);
+                ChestType chestType = ChestTypes.valueOf(type);
+                if (chestType == null) return;
 
-                        Chest chest = new Chest(chestType, location, ownerUUId, itemsSold, money, locationId, chestConfig.AUTO_SELL, chestConfig.COLLECT_CHUNK, chestConfig.DELETE_UNSELLABLE, chestConfig.BANK, 0);
+                DataHandler.QUEUE.submit(() -> {
+                    int locationId = AxSellChestPlugin.getInstance().getDataHandler().getLocationId(location);
+                    ChestConfig chestConfig = chestType.getConfig();
 
-                        AxSellChestPlugin.getInstance().getDataHandler().saveChest(chest);
-                        Chests.startTicking(location.getChunk());
-                    });
-                }
-            });
-        } catch (IOException exception) {
-            LOGGER.error("An exception occurred while listing files in VoidChest folder!", exception);
-        }
+                    Chest chest = new Chest(chestType, location, ownerUUId, itemsSold, money, locationId, chestConfig.AUTO_SELL, chestConfig.COLLECT_CHUNK, chestConfig.DELETE_UNSELLABLE, chestConfig.BANK, 0);
+
+                    AxSellChestPlugin.getInstance().getDataHandler().saveChest(chest);
+                    Chests.startTicking(location.getChunk());
+                });
+            }
+        });
     }
 }

@@ -42,8 +42,8 @@ public class Chest {
     private final Menu menu;
     private boolean ticking = false;
     private boolean broken = false;
-    private double moneyMade;
-    private long itemsSold;
+    private volatile double moneyMade;
+    private volatile long itemsSold;
     private boolean autoSell;
     private boolean collectChunk;
     private boolean deleteUnsellable;
@@ -79,32 +79,32 @@ public class Chest {
         if (this.type.getConfig().CHARGE && charge < System.currentTimeMillis()) return;
         if (ChestTicker.getTick() % type.getChestTick() != 0) return;
 
-        double moneyMade = 0;
-        if (autoSell) {
-            if (collectChunk) {
-                moneyMade += instantCollectAndSell();
+        Scheduler.get().executeAt(location, () -> {
+            double moneyMade = 0;
+            if (autoSell) {
+                if (collectChunk) {
+                    moneyMade += instantCollectAndSell();
+                }
+
+                moneyMade += sellInventory();
+            } else {
+                if (collectChunk) {
+                    collectToChest();
+                }
             }
 
-            moneyMade += sellInventory();
-        } else {
-            if (collectChunk) {
-                collectToChest();
-            }
-        }
+            moneyMade *= this.type.getConfig().BOOSTER;
 
-        moneyMade *= this.type.getConfig().BOOSTER;
-
-        if (moneyMade <= 0) return;
-        if (bank) {
-            if (!BankIntegration.getInstance().deposit(owner, moneyMade)) {
+            if (moneyMade <= 0) return;
+            if (bank && !BankIntegration.getInstance().deposit(owner, moneyMade)) {
                 EconomyIntegration.getInstance().give(owner, moneyMade);
                 this.moneyMade += moneyMade;
                 return;
             }
-        }
 
-        EconomyIntegration.getInstance().give(owner, moneyMade);
-        this.moneyMade += moneyMade;
+            EconomyIntegration.getInstance().give(owner, moneyMade);
+            this.moneyMade += moneyMade;
+        });
     }
 
     public void updateHologram() {

@@ -2,7 +2,7 @@ name: "AxSellChest"
 main: "com.artillexstudios.axsellchest.AxSellChestPlugin"
 version: "$version"
 api-version: "1.18"
-
+folia-supported: true
 softdepend:
   - RoseStacker
   - WildStacker

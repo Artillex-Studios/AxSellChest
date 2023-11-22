@@ -33,8 +33,11 @@ public class ConverterVoidChestV2 implements Converter {
 
     @Override
     public void convert() {
+        File[] files = new File(FileUtils.PLUGIN_DIRECTORY.toFile(), "../VoidChest/voiddata/").listFiles();
+        if (files == null) return;
+
         AtomicInteger integer = new AtomicInteger();
-        Arrays.stream(new File(FileUtils.PLUGIN_DIRECTORY.toFile(), "../VoidChest/voiddata/").listFiles()).forEach((path) -> {
+        Arrays.stream(files).forEach((path) -> {
             System.out.println("Converting: " + path);
             YamlConfiguration config = new YamlConfiguration();
             try {

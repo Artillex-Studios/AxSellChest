@@ -47,6 +47,12 @@ dependencies {
     compileOnly("com.bgsoftware:SuperiorSkyblockAPI:2023.3")
 }
 
+processResources {
+    filesMatching("plugin.yml") {
+        expand(version: version)
+    }
+}
+
 compileJava {
     options.compilerArgs += ["-parameters"]
 }

@@ -15,41 +15,69 @@ options:
   max-charge: 1440
 
 inventory:
-  title: "<green><owner>'s</green> <white>default sellchest"
+  title: "<green><owner>'s</green> <aqua>default</aqua> <white>sellchest"
   size: 45 # Must be divisible by 9
   items:
-    - type: "stone"
-      name: ""
-      lore:
-        - ""
-      actions:
-        - "[close]"
+    - type: gray_stained_glass_pane
+      name: '&7 '
       slots:
-        - "1-10"
-        - "12"
-    - type: "gold_block"
-      name: "Bank: <bank>"
+        - 0-26
+    - type: raw_gold
+      name: '<yellow><u>Bank'
       lore:
-        - ""
-        - "Click to toggle!"
+        - '<white>Toggle, if the chest can'
+        - '<white>store money made in the island bank.'
+        - ''
+        - '<white>State: <bank>'
+        - ''
+        - '<gold>Click to toggle!'
       actions:
-        - "[toggle] bank"
-        - "[close]"
+        - '[toggle] bank'
       slots:
-        - "13"
+        - '11'
+    - type: hopper
+      name: '<aqua><u>Chunk collect'
+      lore:
+        - '<white>Toggle, if the chest can'
+        - '<white>automatically collect dropped items in the chunk.'
+        - ''
+        - '<white>State: <collectchunk>'
+        - ''
+        - '<gold>Click to toggle!'
+      actions:
+        - '[toggle] collectchunk'
+      slots:
+        - '12'
+    - type: amethyst_shard
+      name: '<pink><u>Autosell'
+      lore:
+        - '<white>Toggle, if the chest can'
+        - '<white>automaticall sell items.'
+        - ''
+        - '<white>State: <autosell>'
+        - ''
+        - '<gold>Click to toggle!'
+      actions:
+        - '[toggle] autosell'
+      slots:
+        - '13'
+    - type: chest
+      name: '<gold>Open container'
+      actions:
+        - '[container]'
+      slots:
+        - '15'
+
 
 hologram:
   height: 1.5
   content:
+    - "<aqua><b>Default sellchest"
     - ""
-    - ""
-    - ""
-    - ""
+    - "<white>Owner: <red><owner>"
+    - "<white>Money made: <green><money_made>"
+    - "<white>Items sold: <yellow><items_sold>"
 
 item:
-  name: ""
+  name: "<aqua>Default sellchest"
   type: "chest"
-  lore:
-    - ""
-    - ""
-    - ""
