@@ -27,6 +27,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -157,6 +158,17 @@ public class ChestListener implements Listener {
         event.getPlayer().closeInventory();
 
         chest.getMenu().open(event.getPlayer());
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onPlayerDropItemEvent(PlayerDropItemEvent event) {
+        ItemStack itemStack = event.getItemDrop().getItemStack();
+        if (itemStack.getType().isAir()) return;
+        ItemMeta meta = itemStack.getItemMeta();
+        if (meta == null) return;
+        if (!meta.getPersistentDataContainer().has(Keys.PLACED, PersistentDataType.BYTE)) return;
+
+        event.setCancelled(true);
     }
 
     public static List<ItemStack> getItems() {

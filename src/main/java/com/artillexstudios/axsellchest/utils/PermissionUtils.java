@@ -19,8 +19,10 @@ public class PermissionUtils {
             if (permission.contains("*")) {
                 return Integer.MAX_VALUE;
             }
+            String subString = permission.substring(permission.lastIndexOf('.') + 1);
+            if (subString.isBlank()) continue;
 
-            int value = Integer.parseInt(permission.substring(permission.lastIndexOf('.') + 1));
+            int value = Integer.parseInt(subString);
 
             if (value > limit) {
                 limit = value;
