@@ -4,10 +4,11 @@ import com.artillexstudios.axsellchest.chests.Chest;
 import com.artillexstudios.axsellchest.chests.ChestType;
 import com.artillexstudios.axsellchest.data.DataHandler;
 import com.artillexstudios.axsellchest.utils.FileUtils;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.h2.jdbc.JdbcConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,12 +17,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
 import java.util.UUID;
 
 public class H2DataHandler implements DataHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(H2DataHandler.class);
-    private Connection connection;
+    private HikariDataSource dataSource;
 
     @Override
     public String getType() {
@@ -30,42 +30,49 @@ public class H2DataHandler implements DataHandler {
 
     @Override
     public void setup() {
-        try {
-            connection = new JdbcConnection("jdbc:h2:./" + FileUtils.PLUGIN_DIRECTORY.toFile() + "/data", new Properties(), null, null, false);
-        } catch (SQLException exception) {
-            LOGGER.error("An unexpected error occurred while loading database!", exception);
-            return;
-        }
+        HikariConfig config = new HikariConfig();
+        config.setDataSourceClassName("org.h2.jdbcx.JdbcDataSource");
+        config.addDataSourceProperty("url", "jdbc:h2:async:./" + FileUtils.PLUGIN_DIRECTORY.toFile() + "/data");
+        config.setAutoCommit(true);
+        dataSource = new HikariDataSource(config);
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `axsellchest_types`(`id` INT AUTO_INCREMENT PRIMARY KEY, `name` VARCHAR(64));")) {
+//        try {
+//            Class.forName("org.h2.Driver");
+//            connection = new JdbcConnection("jdbc:h2:async:./" + FileUtils.PLUGIN_DIRECTORY.toFile() + "/data", new Properties(), null, null, false);
+//        } catch (SQLException | ClassNotFoundException exception) {
+//            LOGGER.error("An unexpected error occurred while loading database!", exception);
+//            return;
+//        }
+
+        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `axsellchest_types`(`id` INT AUTO_INCREMENT PRIMARY KEY, `name` VARCHAR(64));")) {
             preparedStatement.executeUpdate();
         } catch (SQLException exception) {
             LOGGER.error("An unexpected error occurred while creating types table!", exception);
             return;
         }
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `axsellchest_users`(`uuid` UUID PRIMARY KEY, `name` VARCHAR(16));")) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `axsellchest_users`(`uuid` UUID PRIMARY KEY, `name` VARCHAR(16));")) {
             preparedStatement.executeUpdate();
         } catch (SQLException exception) {
             LOGGER.error("An unexpected error occurred while creating users table!", exception);
             return;
         }
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `axsellchest_worlds`(`id` INT AUTO_INCREMENT PRIMARY KEY, `name` VARCHAR(64));")) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `axsellchest_worlds`(`id` INT AUTO_INCREMENT PRIMARY KEY, `name` VARCHAR(64));")) {
             preparedStatement.executeUpdate();
         } catch (SQLException exception) {
             LOGGER.error("An unexpected error occurred while creating worlds table!", exception);
             return;
         }
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `axsellchest_locations`(`id` INT AUTO_INCREMENT PRIMARY KEY, `x` INT, `y` INT, `z` INT, `world_id` INT, FOREIGN KEY(world_id) REFERENCES `axsellchest_worlds`(`id`));")) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `axsellchest_locations`(`id` INT AUTO_INCREMENT PRIMARY KEY, `x` INT, `y` INT, `z` INT, `world_id` INT, FOREIGN KEY(world_id) REFERENCES `axsellchest_worlds`(`id`));")) {
             preparedStatement.executeUpdate();
         } catch (SQLException exception) {
             LOGGER.error("An unexpected error occurred while creating locations table!", exception);
             return;
         }
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `axsellchest_chests`(`id` INT AUTO_INCREMENT PRIMARY KEY, `location_id` INT, `owner_id` UUID, `type_id` TINYINT, `money_made` DOUBLE, `items_sold` BIGINT, `auto_sell` BOOL, `collect_chunk` BOOL, `delete_unsellable` BOOL, `bank` BOOL, `charge` BIGINT, FOREIGN KEY(`location_id`) REFERENCES `axsellchest_locations`(`id`), FOREIGN KEY(`owner_id`) REFERENCES `axsellchest_users`(`uuid`), FOREIGN KEY(`type_id`) REFERENCES `axsellchest_types`(`id`));")) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `axsellchest_chests`(`id` INT AUTO_INCREMENT PRIMARY KEY, `location_id` INT, `owner_id` UUID, `type_id` TINYINT, `money_made` DOUBLE, `items_sold` BIGINT, `auto_sell` BOOL, `collect_chunk` BOOL, `delete_unsellable` BOOL, `bank` BOOL, `charge` BIGINT, FOREIGN KEY(`location_id`) REFERENCES `axsellchest_locations`(`id`), FOREIGN KEY(`owner_id`) REFERENCES `axsellchest_users`(`uuid`), FOREIGN KEY(`type_id`) REFERENCES `axsellchest_types`(`id`));")) {
             preparedStatement.executeUpdate();
         } catch (SQLException exception) {
             LOGGER.error("An unexpected error occurred while creating chests table!", exception);
@@ -74,7 +81,7 @@ public class H2DataHandler implements DataHandler {
 
     @Override
     public void insertType(ChestType chestType) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("MERGE INTO `axsellchest_types`(`name`) KEY(`name`) VALUES(?);")) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("MERGE INTO `axsellchest_types`(`name`) KEY(`name`) VALUES(?);")) {
             preparedStatement.setString(1, chestType.getName());
             preparedStatement.executeUpdate();
         } catch (SQLException exception) {
@@ -85,7 +92,7 @@ public class H2DataHandler implements DataHandler {
     @Override
     public void loadChestsForWorld(ChestType type, World world) {
         int typeId = 0;
-        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT `id` FROM `axsellchest_types` WHERE `name` = ?;")) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT `id` FROM `axsellchest_types` WHERE `name` = ?;")) {
             preparedStatement.setString(1, type.getName());
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -98,7 +105,7 @@ public class H2DataHandler implements DataHandler {
             return;
         }
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT `chests`.* FROM `axsellchest_chests` AS `chests` JOIN `axsellchest_locations` AS `location` ON `chests`.`location_id` = `location`.`id` WHERE `location`.`world_id` = (SELECT `id` FROM `axsellchest_worlds` WHERE `name` = ?) AND `type_id` = ?;")) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT `chests`.* FROM `axsellchest_chests` AS `chests` JOIN `axsellchest_locations` AS `location` ON `chests`.`location_id` = `location`.`id` WHERE `location`.`world_id` = (SELECT `id` FROM `axsellchest_worlds` WHERE `name` = ?) AND `type_id` = ?;")) {
             preparedStatement.setString(1, world.getName());
             preparedStatement.setInt(2, typeId);
 
@@ -131,7 +138,7 @@ public class H2DataHandler implements DataHandler {
             return worldId;
         }
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement("MERGE INTO `axsellchest_worlds`(`name`) KEY(`name`) VALUES(?);", Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("MERGE INTO `axsellchest_worlds`(`name`) KEY(`name`) VALUES(?);", Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, world.getName());
             preparedStatement.executeUpdate();
 
@@ -145,7 +152,7 @@ public class H2DataHandler implements DataHandler {
             return 0;
         }
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement("MERGE INTO `axsellchest_locations`(`x`, `y`, `z`, `world_id`) KEY(`x`, `y`, `z`, `world_id`) VALUES (?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("MERGE INTO `axsellchest_locations`(`x`, `y`, `z`, `world_id`) KEY(`x`, `y`, `z`, `world_id`) VALUES (?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setInt(1, (int) Math.round(location.getX()));
             preparedStatement.setInt(2, (int) Math.round(location.getY()));
             preparedStatement.setInt(3, (int) Math.round(location.getZ()));
@@ -166,7 +173,7 @@ public class H2DataHandler implements DataHandler {
 
     @Override
     public Location getLocation(int id) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM `axsellchest_locations` WHERE `id` = ?;")) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM `axsellchest_locations` WHERE `id` = ?;")) {
             preparedStatement.setInt(1, id);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -188,7 +195,7 @@ public class H2DataHandler implements DataHandler {
 
     @Override
     public World getWorld(int id) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT `name` FROM `axsellchest_worlds` WHERE `id` = ?;")) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT `name` FROM `axsellchest_worlds` WHERE `id` = ?;")) {
             preparedStatement.setInt(1, id);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -213,7 +220,7 @@ public class H2DataHandler implements DataHandler {
             locationId = getLocationId(chest.getLocation());
         }
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM `axsellchest_types` WHERE `name` = ?;")) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM `axsellchest_types` WHERE `name` = ?;")) {
             preparedStatement.setString(1, chest.getType().getName());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
@@ -225,9 +232,9 @@ public class H2DataHandler implements DataHandler {
             return;
         }
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement("MERGE INTO `axsellchest_users`(`uuid`, `name`) KEY(`uuid`) VALUES (?,?);", Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("MERGE INTO `axsellchest_users`(`uuid`, `name`) KEY(`uuid`) VALUES (?,?);", Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setObject(1, chest.getOwnerUUID());
-            preparedStatement.setString(2, chest.getOwner().getName());
+            preparedStatement.setString(2, chest.getOwnerName());
             preparedStatement.executeUpdate();
 
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
@@ -244,7 +251,7 @@ public class H2DataHandler implements DataHandler {
             return;
         }
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement("MERGE INTO `axsellchest_chests`(`location_id`, `owner_id`, `type_id`, `money_made`, `items_sold`, `auto_sell`, `collect_chunk`, `delete_unsellable`, `bank`, `charge`) KEY(`location_id`) VALUES(?,?,?,?,?,?,?,?,?,?);")) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("MERGE INTO `axsellchest_chests`(`location_id`, `owner_id`, `type_id`, `money_made`, `items_sold`, `auto_sell`, `collect_chunk`, `delete_unsellable`, `bank`, `charge`) KEY(`location_id`) VALUES(?,?,?,?,?,?,?,?,?,?);")) {
             preparedStatement.setInt(1, locationId);
             preparedStatement.setObject(2, chest.getOwnerUUID());
             preparedStatement.setInt(3, type);
@@ -263,7 +270,7 @@ public class H2DataHandler implements DataHandler {
 
     @Override
     public void deleteChest(Chest chest) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM `axsellchest_chests` WHERE `location_id` = ?;")) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM `axsellchest_chests` WHERE `location_id` = ?;")) {
             preparedStatement.setInt(1, chest.getLocationId());
             preparedStatement.executeUpdate();
         } catch (SQLException exception) {
@@ -271,7 +278,7 @@ public class H2DataHandler implements DataHandler {
             return;
         }
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM `axsellchest_chests` WHERE `location_id` = ?;")) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM `axsellchest_chests` WHERE `location_id` = ?;")) {
             preparedStatement.setInt(1, chest.getLocationId());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (!resultSet.next()) {
@@ -288,7 +295,7 @@ public class H2DataHandler implements DataHandler {
 
     @Override
     public int getChests(UUID uuid) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT COUNT(`owner_id`) FROM `axsellchest_chests` WHERE `owner_id` = ?;")) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT COUNT(`owner_id`) FROM `axsellchest_chests` WHERE `owner_id` = ?;")) {
             preparedStatement.setObject(1, uuid);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
@@ -304,7 +311,7 @@ public class H2DataHandler implements DataHandler {
 
     @Override
     public void disable() {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("SHUTDOWN DEFRAG;")) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SHUTDOWN DEFRAG;")) {
             preparedStatement.executeUpdate();
         } catch (SQLException exception) {
             LOGGER.error("An unexpected error occurred while disabling the database.", exception);

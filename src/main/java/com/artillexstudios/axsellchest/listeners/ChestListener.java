@@ -81,7 +81,7 @@ public class ChestListener implements Listener {
             Location location = event.getBlockPlaced().getLocation();
             int placed = AxSellChestPlugin.getInstance().getDataHandler().getChests(player.getUniqueId());
 
-            if (placed > maxAmount) {
+            if (placed + 1 > maxAmount) {
                 player.sendMessage(StringUtils.formatToString(Messages.PREFIX + Messages.PLACE_LIMIT_REACHED, Placeholder.parsed("placed", String.valueOf(placed)), Placeholder.parsed("max", String.valueOf(maxAmount))));
                 Scheduler.get().runAt(location, task -> {
                     meta.getPersistentDataContainer().remove(Keys.PLACED);

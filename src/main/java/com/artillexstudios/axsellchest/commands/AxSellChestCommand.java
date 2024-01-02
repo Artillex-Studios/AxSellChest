@@ -1,5 +1,6 @@
 package com.artillexstudios.axsellchest.commands;
 
+import com.artillexstudios.axapi.utils.ItemBuilder;
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axsellchest.AxSellChestPlugin;
 import com.artillexstudios.axsellchest.chests.Chest;
@@ -7,7 +8,6 @@ import com.artillexstudios.axsellchest.chests.ChestType;
 import com.artillexstudios.axsellchest.chests.Chests;
 import com.artillexstudios.axsellchest.config.impl.Messages;
 import com.artillexstudios.axsellchest.converter.Converter;
-import com.artillexstudios.axsellchest.utils.ItemBuilder;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Chunk;
 import org.bukkit.command.CommandSender;
@@ -74,7 +74,6 @@ public class AxSellChestCommand {
                 Converter.CONVERTERS.get(0).convert();
             }
             case "voidchestv2" -> {
-                System.out.println("Converter!");
                 Converter.CONVERTERS.get(1).convert();
             }
         }

@@ -1,7 +1,7 @@
 package com.artillexstudios.axsellchest.chests;
 
+import com.artillexstudios.axapi.utils.ItemBuilder;
 import com.artillexstudios.axsellchest.config.impl.ChestConfig;
-import com.artillexstudios.axsellchest.utils.ItemBuilder;
 import com.artillexstudios.axsellchest.utils.Keys;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;

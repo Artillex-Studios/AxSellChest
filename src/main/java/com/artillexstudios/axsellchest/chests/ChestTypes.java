@@ -3,6 +3,7 @@ package com.artillexstudios.axsellchest.chests;
 import com.artillexstudios.axsellchest.AxSellChestPlugin;
 import com.artillexstudios.axsellchest.data.DataHandler;
 import com.artillexstudios.axsellchest.utils.FileUtils;
+import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,6 +72,10 @@ public class ChestTypes {
     public static void loadForWorld(World world) {
         TYPES.forEach((name, type) -> {
             AxSellChestPlugin.getInstance().getDataHandler().loadChestsForWorld(type, world);
+
+            for (Chunk loadedChunk : world.getLoadedChunks()) {
+                Chests.startTicking(loadedChunk);
+            }
         });
     }
 

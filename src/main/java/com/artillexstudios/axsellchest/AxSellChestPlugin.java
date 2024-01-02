@@ -50,13 +50,14 @@ public class AxSellChestPlugin extends AxPlugin {
         manager.addMavenCentral();
 
         for (Libraries value : Libraries.values()) {
+            LOGGER.info("Loading library: {}", value.getLibrary().getGroupId());
             manager.loadLibrary(value.getLibrary());
         }
     }
 
     @Override
     public void enable() {
-        if (Version.getServerVersion().ordinal() > Version.v1_17.ordinal()) {
+        if (Version.getServerVersion().isOlderThan(Version.v1_18)) {
             LOGGER.error("Your server version is not supported! Disabling!");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
@@ -147,7 +148,7 @@ public class AxSellChestPlugin extends AxPlugin {
             return ChestTypes.valueOf(type);
         });
 
-        commandHandler.getAutoCompleter().registerSuggestion("chestTypes", (args, sender, command) -> {
+        commandHandler.getAutoCompleter().registerParameterSuggestions(ChestType.class, (args, sender, command) -> {
             return ChestTypes.getTypes().keySet();
         });
 

@@ -5,6 +5,7 @@ import com.bgsoftware.superiorskyblock.api.SuperiorSkyblockAPI;
 import com.bgsoftware.superiorskyblock.api.island.Island;
 import com.bgsoftware.superiorskyblock.api.island.bank.IslandBank;
 import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 import java.math.BigDecimal;
@@ -21,7 +22,7 @@ public class SuperiorSkyBlockIntegration implements BankIntegration {
         BigDecimal decimal = BigDecimal.valueOf(amount);
 
         if (bank.canDepositMoney(decimal)) {
-            bank.depositMoney(superiorPlayer, decimal);
+            bank.depositAdminMoney(Bukkit.getConsoleSender(), decimal);
             return true;
         }
 

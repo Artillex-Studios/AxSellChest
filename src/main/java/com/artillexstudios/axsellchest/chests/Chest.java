@@ -42,8 +42,8 @@ public class Chest {
     private final Menu menu;
     private boolean ticking = false;
     private boolean broken = false;
-    private volatile double moneyMade;
-    private volatile long itemsSold;
+    private double moneyMade;
+    private long itemsSold;
     private boolean autoSell;
     private boolean collectChunk;
     private boolean deleteUnsellable;

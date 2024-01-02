@@ -86,7 +86,7 @@ public class NMSUtils {
                 f.setAccessible(true);
                 unsafe = (Unsafe) f.get(null);
             } catch (Exception exception) {
-                LOGGER.error("An issue occurred while creatinf new fieldAccessor!", exception);
+                LOGGER.error("An issue occurred while creating new fieldAccessor!", exception);
             }
         }
 
