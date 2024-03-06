@@ -1,6 +1,7 @@
 package com.artillexstudios.axsellchest;
 
 import com.artillexstudios.axapi.AxPlugin;
+import com.artillexstudios.axapi.utils.FeatureFlags;
 import com.artillexstudios.axapi.utils.Version;
 import com.artillexstudios.axsellchest.chests.Chest;
 import com.artillexstudios.axsellchest.chests.ChestTicker;
@@ -50,9 +51,14 @@ public class AxSellChestPlugin extends AxPlugin {
         manager.addMavenCentral();
 
         for (Libraries value : Libraries.values()) {
-            LOGGER.info("Loading library: {}", value.getLibrary().getGroupId());
             manager.loadLibrary(value.getLibrary());
         }
+    }
+
+    @Override
+    public void updateFlags() {
+        FeatureFlags.PACKET_ENTITY_TRACKER_ENABLED.set(true);
+        FeatureFlags.HOLOGRAM_UPDATE_TICKS.set(20L);
     }
 
     @Override
@@ -87,8 +93,6 @@ public class AxSellChestPlugin extends AxPlugin {
         Bukkit.getPluginManager().registerEvents(new WorldListener(), this);
 
         ChestTicker.startTicking();
-
-        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(Chests::tickHolograms, 1, 1, TimeUnit.SECONDS);
 
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
             DataHandler.QUEUE.submit(() -> {

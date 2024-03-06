@@ -2,7 +2,9 @@ package com.artillexstudios.axsellchest.integrations.prices;
 
 import com.artillexstudios.axsellchest.config.impl.Config;
 import com.artillexstudios.axsellchest.integrations.Integration;
+import com.artillexstudios.axsellchest.integrations.prices.impl.EconomyShopGuiIntegration;
 import com.artillexstudios.axsellchest.integrations.prices.impl.ShopGUIPlusIntegration;
+import com.artillexstudios.axsellchest.integrations.prices.impl.ZShopIntegration;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
@@ -26,6 +28,16 @@ public interface PricesIntegration extends Integration {
                 case "shopguiplus" -> {
                     if (Bukkit.getPluginManager().getPlugin("ShopGUIPlus") != null) {
                         integration = new ShopGUIPlusIntegration();
+                    }
+                }
+                case "zshop" -> {
+                    if (Bukkit.getPluginManager().getPlugin("zShop") != null) {
+                        integration = new ZShopIntegration();
+                    }
+                }
+                case "economyshopgui" -> {
+                    if (Bukkit.getPluginManager().getPlugin("EconomyShopGUI") != null) {
+                        integration = new EconomyShopGuiIntegration();
                     }
                 }
             }

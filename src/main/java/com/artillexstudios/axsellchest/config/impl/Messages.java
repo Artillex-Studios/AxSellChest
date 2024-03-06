@@ -31,6 +31,17 @@ public class Messages extends AbstractConfig {
     @Key("place")
     public static String PLACE = "<green>You have placed a sellchest!</green> <gray>(<placed>/<max>)</gray>!";
 
+    @Key("time.day")
+    public static String DAY = "d";
+
+    @Key("time.hour")
+    public static String HOUR = "h";
+
+    @Key("time.minute")
+    public static String MINUTE = "m";
+
+    @Key("time.second")
+    public static String SECOND = "s";
 
     private static final Messages MESSAGES = new Messages();
 

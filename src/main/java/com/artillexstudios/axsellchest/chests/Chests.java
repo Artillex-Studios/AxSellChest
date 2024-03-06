@@ -179,28 +179,6 @@ public class Chests {
         return null;
     }
 
-    public static void tickHolograms() {
-        lock.readLock().lock();
-        try {
-            ArrayList<ChunkPos> chunks = Chests.chunks;
-            int chunksSize = chunks.size();
-
-            for (int i = 0; i < chunksSize; i++) {
-                ChunkPos pos = chunks.get(i);
-                if (!pos.isTicking()) continue;
-
-                ArrayList<Chest> chests = pos.getChests();
-                int chestSize = chests.size();
-                for (int j = 0; j < chestSize; j++) {
-                    Chest chest = chests.get(j);
-                    chest.updateHologram();
-                }
-            }
-        } finally {
-            lock.readLock().unlock();
-        }
-    }
-
     protected static ArrayList<ChunkPos> getChunks() {
         lock.readLock().lock();
         try {

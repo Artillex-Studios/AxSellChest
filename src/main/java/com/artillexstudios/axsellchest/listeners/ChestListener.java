@@ -123,6 +123,11 @@ public class ChestListener implements Listener {
             }
 
             event.setDropItems(false);
+            chest.remove();
+            DataHandler.QUEUE.submit(() -> {
+                AxSellChestPlugin.getInstance().getDataHandler().deleteChest(chest);
+            });
+
             ItemStack item = chest.getType().getItem(chest.getItemsSold(), chest.getMoneyMade());
 
             if (Config.PLACE_IN_INVENTORY) {
@@ -135,10 +140,9 @@ public class ChestListener implements Listener {
                 world.dropItem(location, item);
             }
 
-            chest.remove();
-            DataHandler.QUEUE.submit(() -> {
-                AxSellChestPlugin.getInstance().getDataHandler().deleteChest(chest);
-            });
+            for (ItemStack content : chest.getInventory().getContents()) {
+                world.dropItem(location, content);
+            }
         }
     }
 

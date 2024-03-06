@@ -54,6 +54,14 @@ public class ChestConfig extends AbstractConfig {
     @Key("item")
     public Map<Object, Object> ITEM_SECTION = null;
 
+    @Key("timer-format")
+    @Comment("""
+            1 - HH:MM:SS, for example 01:25:35
+            2 - short format, for example 20m
+            3 - text format, for example 01h 25m 35s
+            \\""")
+    public int TIMER_FORMAT = 1;
+
     private final String fileName;
 
     public ChestConfig(String fileName) {

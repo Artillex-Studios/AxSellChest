@@ -1,5 +1,6 @@
 package com.artillexstudios.axsellchest.menu.actions.impl;
 
+import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axsellchest.chests.Chest;
 import com.artillexstudios.axsellchest.menu.actions.Action;
 import org.bukkit.Bukkit;
@@ -13,6 +14,8 @@ public class ActionConsoleCommand extends Action {
 
     @Override
     public void run(Player player, Chest chest, String arguments) {
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), arguments.replace("%player%", player.getName()));
+        Scheduler.get().run(task -> {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), arguments.replace("%player%", player.getName()));
+        });
     }
 }

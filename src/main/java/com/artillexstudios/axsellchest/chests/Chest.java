@@ -5,14 +5,14 @@ import com.artillexstudios.axapi.hologram.HologramFactory;
 import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.serializers.Serializers;
 import com.artillexstudios.axapi.utils.StringUtils;
+import com.artillexstudios.axapi.utils.placeholder.Placeholder;
 import com.artillexstudios.axsellchest.integrations.bank.BankIntegration;
 import com.artillexstudios.axsellchest.integrations.economy.EconomyIntegration;
 import com.artillexstudios.axsellchest.integrations.prices.PricesIntegration;
 import com.artillexstudios.axsellchest.integrations.stacker.StackerIntegration;
 import com.artillexstudios.axsellchest.menu.Menu;
 import com.artillexstudios.axsellchest.utils.NMSUtils;
-import com.artillexstudios.axsellchest.utils.PlaceholderUtils;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import com.artillexstudios.axsellchest.utils.TimeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -72,10 +72,11 @@ public class Chest {
         menu = new Menu(this);
 
         Chests.load(this);
+        updateHologram();
     }
 
     public void tick() {
-        if (!ticking) return;
+        if (!ticking || broken) return;
         if (this.type.getConfig().CHARGE && charge < System.currentTimeMillis()) return;
         if (ChestTicker.getTick() % type.getChestTick() != 0) return;
 
@@ -112,33 +113,14 @@ public class Chest {
         if (hologram == null) {
             hologram = HologramFactory.get().spawnHologram(location.clone().add(0.5, this.type.getConfig().HOLOGRAM_HEIGHT, 0.5), "chest-" + Serializers.LOCATION.serialize(this.location), 0.3);
 
+            hologram.addPlaceholder(new Placeholder((player, s) -> s.replace("<items_sold>", String.valueOf(itemsSold)).replace("<money_made>", String.valueOf(moneyMade)).replace("<charge>", TimeUtils.format(charge -  System.currentTimeMillis(), this)).replace("<owner>", ownerName)));
+
             List<String> lines = this.type.getConfig().HOLOGRAM_CONTENT;
             int contentSize = lines.size();
             for (int i = 0; i < contentSize; i++) {
                 String line = lines.get(i);
-                hologram.addLine(StringUtils.format(line, Placeholder.parsed("items_sold", String.valueOf(itemsSold)),
-                        Placeholder.parsed("money_made", String.valueOf(moneyMade)),
-                        Placeholder.parsed("charge", charge > System.currentTimeMillis() ? StringUtils.formatTime(charge - System.currentTimeMillis()) : "00:00:00"),
-                        Placeholder.parsed("owner", ownerName)
-                ));
+                hologram.addLine(StringUtils.format(line));
             }
-
-            return;
-        }
-
-
-        List<String> lines = this.type.getConfig().HOLOGRAM_CONTENT;
-        int contentSize = lines.size();
-
-        for (int i = 0; i < contentSize; i++) {
-            String line = lines.get(i);
-            if (!PlaceholderUtils.containsPlaceholders(line)) continue;
-
-            hologram.setLine(i, StringUtils.format(line, Placeholder.parsed("items_sold", String.valueOf(itemsSold)),
-                    Placeholder.parsed("money_made", String.valueOf(moneyMade)),
-                    Placeholder.parsed("charge", charge > System.currentTimeMillis() ? StringUtils.formatTime(charge - System.currentTimeMillis()) : "00:00:00"),
-                    Placeholder.parsed("owner", ownerName)
-            ));
         }
     }
 
@@ -366,6 +348,7 @@ public class Chest {
         if (this.hologram != null) {
             this.hologram.remove();
             this.hologram = null;
+            updateHologram();
         }
 
         menu.updateGui();
