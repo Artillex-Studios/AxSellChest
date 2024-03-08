@@ -10,7 +10,7 @@ options:
   delete-unsellable: true
   hologram: true
   bank: true
-  charge: true
+  charge: false
   # In minutes
   max-charge: 1440
 

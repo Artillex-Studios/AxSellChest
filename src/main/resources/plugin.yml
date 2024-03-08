@@ -12,3 +12,5 @@ softdepend:
   - zShop
   - EconomyShopGUI
   - BentoBox
+  - EconomyShopGUI-Premium
+  - AxGens

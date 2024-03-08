@@ -6,6 +6,7 @@ import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.serializers.Serializers;
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axapi.utils.placeholder.Placeholder;
+import com.artillexstudios.axsellchest.config.impl.Config;
 import com.artillexstudios.axsellchest.integrations.bank.BankIntegration;
 import com.artillexstudios.axsellchest.integrations.economy.EconomyIntegration;
 import com.artillexstudios.axsellchest.integrations.prices.PricesIntegration;
@@ -23,6 +24,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,6 +35,7 @@ import java.util.UUID;
 
 public class Chest {
     private static final List<Item> EMPTY_ITEMS = Collections.emptyList();
+    private static final Logger log = LoggerFactory.getLogger(Chest.class);
     private final Location location;
     private final ChestType type;
     private final OfflinePlayer owner;
@@ -139,6 +143,10 @@ public class Chest {
         int chunkItemSize = chunkItems.size();
         if (chunkItemSize == 0) return 0;
 
+        if (Config.DEBUG) {
+            log.warn("We have {} items in the chunk! Now we're going through them...", chunkItems);
+        }
+
         double price = 0;
         for (int i = 0; i < chunkItemSize; i++) {
             Item item = chunkItems.get(i);
@@ -147,6 +155,9 @@ public class Chest {
 
             double itemPrice = PricesIntegration.getInstance().getPrice(itemStack, amount);
             if (itemPrice <= 0) {
+                if (Config.DEBUG) {
+                    log.warn("Continuing! Price: {}", itemPrice);
+                }
                 continue;
             }
 
@@ -195,6 +206,10 @@ public class Chest {
         int chunkItemSize = chunkItems.size();
         if (chunkItemSize == 0) return;
 
+        if (Config.DEBUG) {
+            log.warn("We have {} items in the chunk! Now we're going through them...", chunkItems);
+        }
+
         for (int i = 0; i < chunkItemSize; i++) {
             Item item = chunkItems.get(i);
             ItemStack itemStack = item.getItemStack();
@@ -202,6 +217,9 @@ public class Chest {
 
             double itemPrice = PricesIntegration.getInstance().getPrice(itemStack, amount);
             if (itemPrice <= 0) {
+                if (Config.DEBUG) {
+                    log.warn("Continuing! Price: {}", itemPrice);
+                }
                 continue;
             }
 

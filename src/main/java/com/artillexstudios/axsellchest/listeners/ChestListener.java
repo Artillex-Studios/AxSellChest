@@ -141,6 +141,8 @@ public class ChestListener implements Listener {
             }
 
             for (ItemStack content : chest.getInventory().getContents()) {
+                if (content == null || content.getType().isAir()) continue;
+
                 world.dropItem(location, content);
             }
         }

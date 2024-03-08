@@ -23,6 +23,7 @@ import com.artillexstudios.axsellchest.listeners.ChunkListener;
 import com.artillexstudios.axsellchest.listeners.WorldListener;
 import com.artillexstudios.axsellchest.utils.Keys;
 import net.byteflux.libby.BukkitLibraryManager;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
@@ -69,6 +70,8 @@ public class AxSellChestPlugin extends AxPlugin {
             return;
         }
 
+        new Metrics(this, 21268);
+        
         INSTANCE = this;
         this.dataHandler = new H2DataHandler();
         this.dataHandler.setup();

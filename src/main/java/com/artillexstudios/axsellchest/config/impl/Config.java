@@ -19,7 +19,7 @@ public class Config extends AbstractConfig {
 
     @Key("integrations.prices")
     @Comment("""
-            Can be ShopGUIPlus or local
+            Can be ShopGUIPlus or EconomyShopGUI, or zShop
             """)
     public static String PRICES_INTEGRATION = "ShopGUIPlus";
 
@@ -48,6 +48,9 @@ public class Config extends AbstractConfig {
 
     @Key("sell-messages.interval")
     public static long SELL_MESSAGE_INTERVAL = -1;
+
+    @Key("debug")
+    public static boolean DEBUG = false;
 
     private static final Config CONFIG = new Config();
 
