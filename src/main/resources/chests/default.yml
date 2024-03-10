@@ -1,68 +1,84 @@
 # The type of the block
-block: "chest"
+block: chest
+
 # The multiplier of this chest
 booster: 1.0
 
 options:
+  # How often should the chest attempt to sell the items in it's chunk/inventory?
+  # WARNING! This is in TICKS! 1 second is 20 ticks.
   sell-interval: 10 # Is in ticks
   auto-sell: true
   collect-chunk: true
   delete-unsellable: true
   hologram: true
   bank: true
-  charge: false
+  charge: true
   # In minutes
   max-charge: 1440
 
 inventory:
-  title: "<green><owner>'s</green> <aqua>default</aqua> <white>sellchest"
-  size: 45 # Must be divisible by 9
+  title: <green><owner>'s</green> <aqua>default</aqua> <white>sellchest
+  size: 27 # Must be divisible by 9
   items:
     - type: gray_stained_glass_pane
       name: '&7 '
       slots:
         - 0-26
-    - type: raw_gold
-      name: '<yellow><u>Bank'
+    - type: lava_bucket
+      name: <gold><u>Charge
       lore:
-        - '<white>Toggle, if the chest can'
-        - '<white>store money made in the island bank.'
+        - ''
+        - '<white>Charge the chest for <gold>30 minutes</gold>!'
+        - ''
+        - '<green>Price: $10,000'
+      actions:
+        - '[charge] 1800'
+      prices:
+        - '[economy] 10000'
+      slots:
+        - '10'
+    - type: raw_gold
+      name: <yellow><u>Bank
+      lore:
+        - <white>Toggle, if the chest can
+        - <white>store money made in the island bank.
         - ''
         - '<white>State: <bank>'
         - ''
-        - '<gold>Click to toggle!'
+        - <gold>Click to toggle!
       actions:
         - '[toggle] bank'
       slots:
         - '11'
     - type: hopper
-      name: '<aqua><u>Chunk collect'
+      name: <aqua><u>Chunk collect
       lore:
-        - '<white>Toggle, if the chest can'
-        - '<white>automatically collect dropped items in the chunk.'
+        - <white>Toggle, if the chest can
+        - <white>automatically collect dropped items in the chunk.
         - ''
         - '<white>State: <collectchunk>'
         - ''
-        - '<gold>Click to toggle!'
+        - <gold>Click to toggle!
       actions:
         - '[toggle] collectchunk'
       slots:
         - '12'
     - type: amethyst_shard
-      name: '<pink><u>Autosell'
+      name: <light_purple><u>Autosell
       lore:
-        - '<white>Toggle, if the chest can'
-        - '<white>automaticall sell items.'
+        - <white>Toggle, if the chest can
+        - <white>automaticall sell items.
         - ''
         - '<white>State: <autosell>'
         - ''
-        - '<gold>Click to toggle!'
+        - <gold>Click to toggle!
       actions:
         - '[toggle] autosell'
       slots:
         - '13'
     - type: chest
-      name: '<gold>Open container'
+      name: <gold>Open container
       actions:
         - '[container]'
       slots:
@@ -70,14 +86,21 @@ inventory:
 
 
 hologram:
-  height: 1.5
+  height: 2.75
   content:
-    - "<aqua><b>Default sellchest"
-    - ""
-    - "<white>Owner: <red><owner>"
-    - "<white>Money made: <green><money_made>"
-    - "<white>Items sold: <yellow><items_sold>"
+    - <aqua><b>Default sellchest
+    - ''
+    - '<white>Owner: <red><owner>'
+    - '<white>Money made: <green><money_made>'
+    - '<white>Items sold: <yellow><items_sold>'
+    - '	'
+    - '<white>Charge: <yellow><charge>'
 
 item:
-  name: "<aqua>Default sellchest"
-  type: "chest"
+  name: <aqua>Default sellchest
+  type: chest
+
+# 1 - HH:MM:SS, for example 01:25:35
+# 2 - short format, for example 20m
+# 3 - text format, for example 01h 25m 35s
+timer-format: 1

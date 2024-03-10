@@ -1,5 +1,1 @@
 place-in-inventory: true
-
-sell-messages:
-  # In seconds
-  interval: 60

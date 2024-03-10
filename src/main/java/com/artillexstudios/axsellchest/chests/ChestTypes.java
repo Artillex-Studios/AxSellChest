@@ -80,8 +80,8 @@ public class ChestTypes {
     }
 
     public static void register(ChestType chestType) {
-        if (TYPES.containsKey(chestType.getName())) {
-            LOGGER.warn("A chest type named {} has already been registered! Skipping!", chestType.getName());
+        if (TYPES.containsKey(chestType.getName().toLowerCase(Locale.ENGLISH))) {
+            LOGGER.warn("A chest type named {} has already been registered! Skipping!", chestType.getName().toLowerCase(Locale.ENGLISH));
             return;
         }
 

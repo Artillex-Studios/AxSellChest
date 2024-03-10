@@ -36,14 +36,6 @@ public class H2DataHandler implements DataHandler {
         config.setAutoCommit(true);
         dataSource = new HikariDataSource(config);
 
-//        try {
-//            Class.forName("org.h2.Driver");
-//            connection = new JdbcConnection("jdbc:h2:async:./" + FileUtils.PLUGIN_DIRECTORY.toFile() + "/data", new Properties(), null, null, false);
-//        } catch (SQLException | ClassNotFoundException exception) {
-//            LOGGER.error("An unexpected error occurred while loading database!", exception);
-//            return;
-//        }
-
         try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `axsellchest_types`(`id` INT AUTO_INCREMENT PRIMARY KEY, `name` VARCHAR(64));")) {
             preparedStatement.executeUpdate();
         } catch (SQLException exception) {

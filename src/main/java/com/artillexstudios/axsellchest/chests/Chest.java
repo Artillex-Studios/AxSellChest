@@ -27,15 +27,20 @@ import org.bukkit.inventory.ItemStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.text.NumberFormatter;
+import java.text.CompactNumberFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 public class Chest {
     private static final List<Item> EMPTY_ITEMS = Collections.emptyList();
     private static final Logger log = LoggerFactory.getLogger(Chest.class);
+    private static final NumberFormat formatter = NumberFormat.getCompactNumberInstance(Locale.ENGLISH, NumberFormat.Style.SHORT);
     private final Location location;
     private final ChestType type;
     private final OfflinePlayer owner;
@@ -117,7 +122,7 @@ public class Chest {
         if (hologram == null) {
             hologram = HologramFactory.get().spawnHologram(location.clone().add(0.5, this.type.getConfig().HOLOGRAM_HEIGHT, 0.5), "chest-" + Serializers.LOCATION.serialize(this.location), 0.3);
 
-            hologram.addPlaceholder(new Placeholder((player, s) -> s.replace("<items_sold>", String.valueOf(itemsSold)).replace("<money_made>", String.valueOf(moneyMade)).replace("<charge>", TimeUtils.format(charge -  System.currentTimeMillis(), this)).replace("<owner>", ownerName)));
+            hologram.addPlaceholder(new Placeholder((player, s) -> s.replace("<items_sold>", String.valueOf(itemsSold)).replace("<money_made>", formatter.format(moneyMade)).replace("<charge>", TimeUtils.format(charge -  System.currentTimeMillis(), this)).replace("<owner>", ownerName)));
 
             List<String> lines = this.type.getConfig().HOLOGRAM_CONTENT;
             int contentSize = lines.size();
@@ -355,6 +360,8 @@ public class Chest {
         this.chunk = chunk;
 
         Scheduler.get().runAt(location, task -> {
+            if (!location.getWorld().isChunkLoaded(chunk)) return;
+
             BlockState state = location.getBlock().getState();
             if (state instanceof Container container) {
                 this.inventory = container.getInventory();

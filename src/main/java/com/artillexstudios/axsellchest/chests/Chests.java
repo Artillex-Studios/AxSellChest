@@ -125,7 +125,7 @@ public class Chests {
     }
 
     public static List<Chest> getChests() {
-        ArrayList<Chest> chests = new ArrayList<>(chunks.size());
+        ArrayList<Chest> chests = new ArrayList<>(chunks.size() * 4);
 
         lock.readLock().lock();
         try {

@@ -8,20 +8,10 @@ import java.util.Map;
 
 public class ChestConfig extends AbstractConfig {
     @Key("block")
-    @Comment("""
-            The type of the block
-            """)
     public String BLOCK_TYPE = "chest";
     @Key("booster")
-    @Comment("""
-            The multiplier of this chest
-            """)
     public double BOOSTER = 1.0;
     @Key("options.sell-interval")
-    @Comment("""
-            How often should the chest attempt to sell the items in it's chunk/inventory?
-            WARNING! This is in TICKS! 1 second is 20 ticks.
-            """)
     public long SELL_INTERVAL = 1;
     @Key("options.auto-sell")
     public boolean AUTO_SELL = true;
@@ -41,9 +31,6 @@ public class ChestConfig extends AbstractConfig {
     @Key("inventory.title")
     public String INVENTORY_TITLE = "<green><owner>'s</green> <white>default sellchest";
     @Key("inventory.size")
-    @Comment("""
-            Must be divisible by 9!
-            """)
     public int INVENTORY_SIZE = 45;
     @Key("inventory.items")
     public List<Map<Object, Object>> INVENTORY_ITEMS = List.of();
@@ -55,11 +42,6 @@ public class ChestConfig extends AbstractConfig {
     public Map<Object, Object> ITEM_SECTION = null;
 
     @Key("timer-format")
-    @Comment("""
-            1 - HH:MM:SS, for example 01:25:35
-            2 - short format, for example 20m
-            3 - text format, for example 01h 25m 35s
-            \\""")
     public int TIMER_FORMAT = 1;
 
     private final String fileName;
