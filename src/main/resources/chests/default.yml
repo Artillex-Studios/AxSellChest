@@ -34,6 +34,9 @@ inventory:
         - '<green>Price: $10,000'
       actions:
         - '[charge] 1800'
+        - '[message] <white>You have charged the chest for <gold>30 minutes</gold>!'
+      fail-actions:
+        - "[message] <red>You don't have <green>$30000</green> to charge this chest!"
       prices:
         - '[economy] 10000'
       slots:

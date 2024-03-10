@@ -62,6 +62,9 @@ public class Menu {
             if (Prices.pay(player, (List<String>) inventoryItem.getOrDefault("prices", List.of()))) {
                 Actions.run(player, this.chest, (List<String>) inventoryItem.getOrDefault("actions", List.of()));
                 updateGui();
+            } else {
+                Actions.run(player, this.chest, (List<String>) inventoryItem.getOrDefault("fail-actions", List.of()));
+                updateGui();
             }
         });
         return guiItem;
