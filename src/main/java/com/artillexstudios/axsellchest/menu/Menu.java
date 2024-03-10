@@ -55,6 +55,10 @@ public class Menu {
         guiItem.setAction(event -> {
             Player player = (Player) event.getWhoClicked();
 
+            if (chest.isBroken()) {
+                return;
+            }
+
             if (Prices.pay(player, (List<String>) inventoryItem.getOrDefault("prices", List.of()))) {
                 Actions.run(player, this.chest, (List<String>) inventoryItem.getOrDefault("actions", List.of()));
                 updateGui();

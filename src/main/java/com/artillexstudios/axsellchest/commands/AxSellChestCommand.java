@@ -12,8 +12,10 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Chunk;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import revxrsal.commands.annotation.AutoComplete;
 import revxrsal.commands.annotation.Command;
 import revxrsal.commands.annotation.Default;
+import revxrsal.commands.annotation.DefaultFor;
 import revxrsal.commands.annotation.Subcommand;
 import revxrsal.commands.bukkit.annotation.CommandPermission;
 
@@ -59,13 +61,6 @@ public class AxSellChestCommand {
                 """, Placeholder.parsed("ticking", String.valueOf(ticking)), Placeholder.parsed("not-ticking", String.valueOf(notTicking)), Placeholder.parsed("all", String.valueOf(notTicking + ticking))));
     }
 
-    @Subcommand("startticking")
-    @CommandPermission("axsellchest.command.startticking")
-    public void startTicking(Player sender) {
-        Chunk chunk = sender.getLocation().getChunk();
-        Chests.startTicking(chunk);
-    }
-
     @Subcommand("convert")
     @CommandPermission("axsellchest.command.convert")
     public void convert(CommandSender sender, String converter) {
@@ -76,6 +71,14 @@ public class AxSellChestCommand {
             case "voidchestv2" -> {
                 Converter.CONVERTERS.get(1).convert();
             }
+        }
+    }
+
+    @DefaultFor({"~", "~ help"})
+    @CommandPermission("axmines.command.help")
+    public void help(CommandSender sender) {
+        for (String s : Messages.HELP) {
+            sender.sendMessage(StringUtils.formatToString(s));
         }
     }
 }
