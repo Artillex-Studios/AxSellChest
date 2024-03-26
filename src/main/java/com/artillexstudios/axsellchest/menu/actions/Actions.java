@@ -36,7 +36,7 @@ public class Actions {
     public static void run(Player player, Chest chest, List<String> actions) {
         for (String rawAction : actions) {
             String id = StringUtils.substringBetween(rawAction, "[", "]").toLowerCase(Locale.ENGLISH);
-            String arguments = StringUtils.substringAfter(rawAction, "] ").toLowerCase(Locale.ENGLISH);
+            String arguments = StringUtils.substringAfter(rawAction, "] ");
 
             Action action = ACTIONS.get(id);
             if (action == null) continue;

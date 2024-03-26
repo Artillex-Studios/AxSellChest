@@ -21,7 +21,7 @@ public class Prices {
     public static boolean pay(Player player, List<String> prices) {
         for (String rawPrice : prices) {
             String id = StringUtils.substringBetween(rawPrice, "[", "]").toLowerCase(Locale.ENGLISH);
-            String arguments = StringUtils.substringAfter(rawPrice, "] ").toLowerCase(Locale.ENGLISH);
+            String arguments = StringUtils.substringAfter(rawPrice, "] ");
 
             Price price = PRICES.get(id);
             if (price == null) continue;

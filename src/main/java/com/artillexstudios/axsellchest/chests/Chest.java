@@ -27,8 +27,6 @@ import org.bukkit.inventory.ItemStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.text.NumberFormatter;
-import java.text.CompactNumberFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;

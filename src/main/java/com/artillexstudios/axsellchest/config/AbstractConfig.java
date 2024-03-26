@@ -23,43 +23,51 @@
  */
 package com.artillexstudios.axsellchest.config;
 
+import com.artillexstudios.axapi.config.Config;
+import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.block.Comments;
+import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.block.implementation.Section;
+import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.libs.org.snakeyaml.engine.v2.common.FlowStyle;
+import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.settings.dumper.DumperSettings;
+import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.settings.general.GeneralSettings;
+import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.settings.loader.LoaderSettings;
+import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.settings.updater.UpdaterSettings;
 import com.artillexstudios.axsellchest.utils.FileUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.simpleyaml.configuration.ConfigurationSection;
-import org.simpleyaml.configuration.comments.CommentType;
-import org.simpleyaml.configuration.file.YamlFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Array;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class AbstractConfig {
-    private YamlFile config;
+    private Config config;
 
-    public YamlFile getConfig() {
+    public Config getConfig() {
         return this.config;
     }
 
     protected void reload(final Path path, Class<? extends AbstractConfig> clazz, AbstractConfig instance) {
-        this.config = new YamlFile(path.toFile());
-
         Logger logger = LoggerFactory.getLogger(clazz);
 
         if (!FileUtils.getSuggestions(path.toFile(), logger)) {
             return;
         }
 
+        this.config = new Config(path.toFile(), InputStream.nullInputStream(), GeneralSettings.builder().build(), LoaderSettings.builder().setDetailedErrors(true).build(), DumperSettings.builder().setEndMarker(false).setStartMarker(false).setFlowStyle(FlowStyle.BLOCK).build(), UpdaterSettings.builder().setAutoSave(true).build());
         try {
-            getConfig().createOrLoadWithComments();
+            getConfig().getBackingDocument().reload();
         } catch (Exception exception) {
             logger.error("Could not load yaml file: {}", path.toFile(), exception);
             return;
@@ -77,7 +85,9 @@ public class AbstractConfig {
                 field.set(instance, value instanceof String str ? StringEscapeUtils.unescapeJava(str) : value);
 
                 if (comment != null) {
-                    setComment(key.value(), comment.value());
+                    for (String s : comment.value()) {
+                        setComment(key.value(), s);
+                    }
                 }
             } catch (Throwable e) {
                 logger.error("An issue occurred while loading file: {}", path.toFile(), e);
@@ -87,7 +97,7 @@ public class AbstractConfig {
         // save yaml to disk
         try {
             getConfig().save();
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("An issue occurred while loading file: {}", path.toFile(), e);
         }
     }
@@ -100,7 +110,11 @@ public class AbstractConfig {
     }
 
     protected void setComment(String path, @Nullable String comment) {
-        getConfig().setComment(path, comment, CommentType.BLOCK);
+        if (comment != null) {
+            getConfig().getBackingDocument().getBlock(path).addComment(comment);
+        } else {
+            getConfig().getBackingDocument().getBlock(path).removeComments();
+        }
     }
 
     protected @Nullable Object get(String path, @Nullable Object def) {
@@ -110,22 +124,18 @@ public class AbstractConfig {
 
     protected @Nullable Object get(String path) {
         Object value = getConfig().get(path);
-        if (!(value instanceof ConfigurationSection section)) {
+        if (!(value instanceof Section section)) {
             return value;
         }
         Map<String, Object> map = new LinkedHashMap<>();
-        for (String key : section.getKeys(false)) {
-            String rawValue = section.getString(key);
+        for (Object key : section.getKeys()) {
+            Object rawValue = section.get(key.toString());
             if (rawValue == null) {
                 continue;
             }
-            map.put(key, addToMap(rawValue));
+            map.put(key.toString(), rawValue);
         }
         return map;
-    }
-
-    protected Object addToMap(String rawValue) {
-        return rawValue;
     }
 
     protected void set(String path, @Nullable Object value) {
@@ -141,6 +151,6 @@ public class AbstractConfig {
     @Target(ElementType.FIELD)
     @Retention(RetentionPolicy.RUNTIME)
     public @interface Comment {
-        String value();
+        String[] value();
     }
 }
