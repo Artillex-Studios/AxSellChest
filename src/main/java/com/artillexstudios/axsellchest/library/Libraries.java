@@ -8,8 +8,7 @@ public enum Libraries {
     H2("com{}h2database:h2:2.2.220", new Relocation("org{}h2", "com{}artillexstudios{}axsellchest{}libs{}h2")),
     COMMONS_IO("commons-io:commons-io:2.15.0"),
     COMMONS_TEXT("org{}apache{}commons:commons-text:1.11.0"),
-    TRIUMPH_GUI("dev.triumphteam:triumph-gui:3.1.7"),
-    SIMPLEYAML("me.carleslc.Simple-YAML:Simple-Yaml:1.8.4");
+    TRIUMPH_GUI("dev.triumphteam:triumph-gui:3.1.7");
 
     private final Library library;
 

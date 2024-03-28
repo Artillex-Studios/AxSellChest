@@ -57,7 +57,6 @@ dependencies {
     compileOnly("com.bgsoftware:WildStackerAPI:2023.2")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
     compileOnly("com.github.brcdev-minecraft:shopgui-api:3.0.0")
-    compileOnly("me.carleslc.Simple-YAML:Simple-Yaml:1.8.4")
     compileOnly("com.bgsoftware:SuperiorSkyblockAPI:2023.3")
     compileOnly("com.github.Maxlego08:zShop-API:3.0.5")
     compileOnly("com.github.Gypopo:EconomyShopGUI-API:1.7.0")

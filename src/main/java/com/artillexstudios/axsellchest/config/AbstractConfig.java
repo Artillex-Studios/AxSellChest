@@ -24,7 +24,6 @@
 package com.artillexstudios.axsellchest.config;
 
 import com.artillexstudios.axapi.config.Config;
-import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.block.Comments;
 import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.block.implementation.Section;
 import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.libs.org.snakeyaml.engine.v2.common.FlowStyle;
 import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.settings.dumper.DumperSettings;
@@ -34,7 +33,6 @@ import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.settings.updater.U
 import com.artillexstudios.axsellchest.utils.FileUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.simpleyaml.configuration.ConfigurationSection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,13 +41,11 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.lang.reflect.Array;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class AbstractConfig {
     private Config config;
@@ -84,11 +80,7 @@ public class AbstractConfig {
                 Object value = getValue(key.value(), field.get(instance));
                 field.set(instance, value instanceof String str ? StringEscapeUtils.unescapeJava(str) : value);
 
-                if (comment != null) {
-                    for (String s : comment.value()) {
-                        setComment(key.value(), s);
-                    }
-                }
+                setComment(key.value(), Arrays.asList(comment.value()));
             } catch (Throwable e) {
                 logger.error("An issue occurred while loading file: {}", path.toFile(), e);
             }
@@ -109,9 +101,9 @@ public class AbstractConfig {
         return get(path, def);
     }
 
-    protected void setComment(String path, @Nullable String comment) {
+    protected void setComment(String path, @Nullable List<String> comment) {
         if (comment != null) {
-            getConfig().getBackingDocument().getBlock(path).addComment(comment);
+            getConfig().getBackingDocument().getBlock(path).setComments(comment);
         } else {
             getConfig().getBackingDocument().getBlock(path).removeComments();
         }
