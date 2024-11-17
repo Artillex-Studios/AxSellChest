@@ -64,7 +64,7 @@ public class H2DataHandler implements DataHandler {
             return;
         }
 
-        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `axsellchest_chests`(`id` INT AUTO_INCREMENT PRIMARY KEY, `location_id` INT, `owner_id` UUID, `type_id` TINYINT, `money_made` DOUBLE, `items_sold` BIGINT, `auto_sell` BOOL, `collect_chunk` BOOL, `delete_unsellable` BOOL, `bank` BOOL, `charge` BIGINT, FOREIGN KEY(`location_id`) REFERENCES `axsellchest_locations`(`id`), FOREIGN KEY(`owner_id`) REFERENCES `axsellchest_users`(`uuid`), FOREIGN KEY(`type_id`) REFERENCES `axsellchest_types`(`id`));")) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `axsellchest_chests`(`id` INT AUTO_INCREMENT PRIMARY KEY, `location_id` INT, `owner_id` UUID, `type_id` TINYINT, `money_made` MEDIUMBLOB, `items_sold` MEDIUMBLOB, `auto_sell` BOOL, `collect_chunk` BOOL, `delete_unsellable` BOOL, `bank` BOOL, `charge` BIGINT, FOREIGN KEY(`location_id`) REFERENCES `axsellchest_locations`(`id`), FOREIGN KEY(`owner_id`) REFERENCES `axsellchest_users`(`uuid`), FOREIGN KEY(`type_id`) REFERENCES `axsellchest_types`(`id`));")) {
             preparedStatement.executeUpdate();
         } catch (SQLException exception) {
             LOGGER.error("An unexpected error occurred while creating chests table!", exception);
@@ -105,8 +105,8 @@ public class H2DataHandler implements DataHandler {
                 while (resultSet.next()) {
                     int locationId = resultSet.getInt("location_id");
                     UUID ownerUUID = (UUID) resultSet.getObject("owner_id");
-                    double moneyMade = resultSet.getDouble("money_made");
-                    long itemsSold = resultSet.getLong("items_sold");
+                    String moneyMade = resultSet.getString("money_made");
+                    String itemsSold = resultSet.getString("items_sold");
                     boolean autoSell = resultSet.getBoolean("auto_sell");
                     boolean collectChunk = resultSet.getBoolean("collect_chunk");
                     boolean deleteUnsellable = resultSet.getBoolean("delete_unsellable");
@@ -247,8 +247,8 @@ public class H2DataHandler implements DataHandler {
             preparedStatement.setInt(1, locationId);
             preparedStatement.setObject(2, chest.getOwnerUUID());
             preparedStatement.setInt(3, type);
-            preparedStatement.setDouble(4, chest.getMoneyMade());
-            preparedStatement.setLong(5, chest.getItemsSold());
+            preparedStatement.setString(4, chest.getMoneyMade().toString());
+            preparedStatement.setString(5, chest.getItemsSold().toString());
             preparedStatement.setBoolean(6, chest.isAutoSell());
             preparedStatement.setBoolean(7, chest.isCollectChunk());
             preparedStatement.setBoolean(8, chest.isDeleteUnsellable());

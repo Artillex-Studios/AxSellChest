@@ -81,7 +81,7 @@ public class ConverterVoidChestV2 implements Converter {
                     int locationId = AxSellChestPlugin.getInstance().getDataHandler().getLocationId(location);
                     ChestConfig chestConfig = chestType.getConfig();
 
-                    Chest chest = new Chest(chestType, location, ownerUUID, itemsSold, money, locationId, chestConfig.AUTO_SELL, chestConfig.COLLECT_CHUNK, chestConfig.DELETE_UNSELLABLE, chestConfig.BANK, 0);
+                    Chest chest = new Chest(chestType, location, ownerUUID, Long.toString(itemsSold), Double.toString(money), locationId, chestConfig.AUTO_SELL, chestConfig.COLLECT_CHUNK, chestConfig.DELETE_UNSELLABLE, chestConfig.BANK, 0);
 
                     AxSellChestPlugin.getInstance().getDataHandler().saveChest(chest);
                     Chests.startTicking(location.getChunk());

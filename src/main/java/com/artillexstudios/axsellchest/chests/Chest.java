@@ -1,12 +1,13 @@
 package com.artillexstudios.axsellchest.chests;
 
 import com.artillexstudios.axapi.hologram.Hologram;
-import com.artillexstudios.axapi.hologram.HologramFactory;
+import com.artillexstudios.axapi.hologram.HologramLine;
 import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.serializers.Serializers;
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axapi.utils.placeholder.Placeholder;
 import com.artillexstudios.axsellchest.config.impl.Config;
+import com.artillexstudios.axsellchest.event.AxSellchestSellEvent;
 import com.artillexstudios.axsellchest.integrations.bank.BankIntegration;
 import com.artillexstudios.axsellchest.integrations.economy.EconomyIntegration;
 import com.artillexstudios.axsellchest.integrations.prices.PricesIntegration;
@@ -14,6 +15,7 @@ import com.artillexstudios.axsellchest.integrations.stacker.StackerIntegration;
 import com.artillexstudios.axsellchest.menu.Menu;
 import com.artillexstudios.axsellchest.utils.NMSUtils;
 import com.artillexstudios.axsellchest.utils.TimeUtils;
+import net.kyori.adventure.text.minimessage.tag.Tag;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -27,18 +29,21 @@ import org.bukkit.inventory.ItemStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
 public class Chest {
+    public static final NumberFormat formatter = NumberFormat.getCompactNumberInstance(Locale.ENGLISH, NumberFormat.Style.SHORT);
     private static final List<Item> EMPTY_ITEMS = Collections.emptyList();
     private static final Logger log = LoggerFactory.getLogger(Chest.class);
-    private static final NumberFormat formatter = NumberFormat.getCompactNumberInstance(Locale.ENGLISH, NumberFormat.Style.SHORT);
     private final Location location;
     private final ChestType type;
     private final OfflinePlayer owner;
@@ -49,8 +54,8 @@ public class Chest {
     private final Menu menu;
     private boolean ticking = false;
     private boolean broken = false;
-    private double moneyMade;
-    private long itemsSold;
+    private BigDecimal moneyMade;
+    private BigInteger itemsSold;
     private boolean autoSell;
     private boolean collectChunk;
     private boolean deleteUnsellable;
@@ -60,14 +65,14 @@ public class Chest {
     private Hologram hologram;
     private Chunk chunk;
 
-    public Chest(ChestType type, Location location, UUID ownerUUID, long itemsSold, double moneyMade, int locationId, boolean autoSell, boolean collectChunk, boolean deleteUnsellable, boolean bank, long charge) {
+    public Chest(ChestType type, Location location, UUID ownerUUID, String itemsSold, String moneyMade, int locationId, boolean autoSell, boolean collectChunk, boolean deleteUnsellable, boolean bank, long charge) {
         this.type = type;
         this.location = location;
         this.owner = Bukkit.getOfflinePlayer(ownerUUID);
         String ownerName = owner.getName();
         this.ownerName = ownerName == null ? "---" : ownerName;
-        this.itemsSold = itemsSold;
-        this.moneyMade = moneyMade;
+        this.itemsSold = new BigInteger(itemsSold);
+        this.moneyMade = new BigDecimal(moneyMade);
         this.locationId = locationId;
         this.ownerUUID = ownerUUID;
         this.autoSell = autoSell;
@@ -102,31 +107,36 @@ public class Chest {
             }
 
             moneyMade *= this.type.getConfig().BOOSTER;
+            AxSellchestSellEvent event = new AxSellchestSellEvent(this, moneyMade);
+            Bukkit.getPluginManager().callEvent(event);
 
+            moneyMade = event.amount();
             if (moneyMade <= 0) return;
-            if (bank && !BankIntegration.getInstance().deposit(owner, moneyMade)) {
+
+            if (bank) {
+                if (!BankIntegration.getInstance().deposit(owner, moneyMade)) {
+                    EconomyIntegration.getInstance().give(owner, moneyMade);
+                }
+            } else {
                 EconomyIntegration.getInstance().give(owner, moneyMade);
-                this.moneyMade += moneyMade;
-                return;
             }
 
-            EconomyIntegration.getInstance().give(owner, moneyMade);
-            this.moneyMade += moneyMade;
+            this.moneyMade = this.moneyMade.add(BigDecimal.valueOf(moneyMade));
         });
     }
 
     public void updateHologram() {
         if (!this.type.getConfig().HOLOGRAM) return;
         if (hologram == null) {
-            hologram = HologramFactory.get().spawnHologram(location.clone().add(0.5, this.type.getConfig().HOLOGRAM_HEIGHT, 0.5), "chest-" + Serializers.LOCATION.serialize(this.location), 0.3);
+            hologram = new Hologram(location.clone().add(0.5, this.type.getConfig().HOLOGRAM_HEIGHT, 0.5), "chest-" + Serializers.LOCATION.serialize(this.location), 0.3);
 
-            hologram.addPlaceholder(new Placeholder((player, s) -> s.replace("<items_sold>", String.valueOf(itemsSold)).replace("<money_made>", formatter.format(moneyMade)).replace("<charge>", TimeUtils.format(charge -  System.currentTimeMillis(), this)).replace("<owner>", ownerName)));
+            hologram.addPlaceholder(new Placeholder((player, s) -> s.replace("<items_sold>", String.valueOf(itemsSold)).replace("<money_made>", formatter.format(moneyMade)).replace("<charge>", TimeUtils.format(charge - System.currentTimeMillis(), this)).replace("<owner>", ownerName)));
 
             List<String> lines = this.type.getConfig().HOLOGRAM_CONTENT;
             int contentSize = lines.size();
             for (int i = 0; i < contentSize; i++) {
                 String line = lines.get(i);
-                hologram.addLine(StringUtils.format(line));
+                hologram.addLine(StringUtils.formatToString(line), HologramLine.Type.TEXT);
             }
         }
     }
@@ -154,7 +164,7 @@ public class Chest {
         for (int i = 0; i < chunkItemSize; i++) {
             Item item = chunkItems.get(i);
             ItemStack itemStack = item.getItemStack();
-            int amount = StackerIntegration.getInstance().getAmount(item);
+            long amount = StackerIntegration.getInstance().getAmount(item);
 
             double itemPrice = PricesIntegration.getInstance().getPrice(itemStack, amount);
             if (itemPrice <= 0) {
@@ -166,7 +176,7 @@ public class Chest {
 
             // Remove the item only if it can be sold
             item.remove();
-            itemsSold += amount;
+            this.itemsSold = this.itemsSold.add(BigInteger.valueOf(amount));
 
             price += itemPrice;
         }
@@ -195,7 +205,7 @@ public class Chest {
                 continue;
             }
 
-            itemsSold += amount;
+            this.itemsSold = itemsSold.add(BigInteger.valueOf(amount));
             itemStack.setAmount(0);
             price += itemPrice;
         }
@@ -216,7 +226,7 @@ public class Chest {
         for (int i = 0; i < chunkItemSize; i++) {
             Item item = chunkItems.get(i);
             ItemStack itemStack = item.getItemStack();
-            int amount = StackerIntegration.getInstance().getAmount(item);
+            long amount = StackerIntegration.getInstance().getAmount(item);
 
             double itemPrice = PricesIntegration.getInstance().getPrice(itemStack, amount);
             if (itemPrice <= 0) {
@@ -226,7 +236,7 @@ public class Chest {
                 continue;
             }
 
-            itemStack.setAmount(amount);
+            itemStack.setAmount((int) amount);
             HashMap<Integer, ItemStack> remaining = inventory.addItem(itemStack);
             if (remaining.isEmpty()) {
                 // Remove the item only if it can be sold
@@ -286,11 +296,11 @@ public class Chest {
         return ownerUUID;
     }
 
-    public double getMoneyMade() {
+    public BigDecimal getMoneyMade() {
         return moneyMade;
     }
 
-    public long getItemsSold() {
+    public BigInteger getItemsSold() {
         return itemsSold;
     }
 

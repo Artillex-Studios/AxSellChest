@@ -28,7 +28,9 @@ public interface EconomyIntegration extends Integration {
         public void reload() {
             switch (Config.ECONOMY_INTEGRATION.toLowerCase(Locale.ENGLISH)) {
                 case "vault" -> {
+                    System.out.println("Vault");
                     if (Bukkit.getPluginManager().getPlugin("Vault") != null) {
+                        System.out.println("Vault 2222222222");
                         integration = new VaultIntegration();
                     }
                 }

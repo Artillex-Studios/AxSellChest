@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -74,7 +75,7 @@ public class ConverterVoidChest implements Converter {
                     int locationId = AxSellChestPlugin.getInstance().getDataHandler().getLocationId(location);
                     ChestConfig chestConfig = chestType.getConfig();
 
-                    Chest chest = new Chest(chestType, location, ownerUUId, itemsSold, money, locationId, chestConfig.AUTO_SELL, chestConfig.COLLECT_CHUNK, chestConfig.DELETE_UNSELLABLE, chestConfig.BANK, 0);
+                    Chest chest = new Chest(chestType, location, ownerUUId, Long.toString(itemsSold), Double.toString(money), locationId, chestConfig.AUTO_SELL, chestConfig.COLLECT_CHUNK, chestConfig.DELETE_UNSELLABLE, chestConfig.BANK, 0);
 
                     AxSellChestPlugin.getInstance().getDataHandler().saveChest(chest);
                     Chests.startTicking(location.getChunk());

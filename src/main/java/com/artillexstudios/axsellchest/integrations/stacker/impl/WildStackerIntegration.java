@@ -8,19 +8,19 @@ import org.bukkit.entity.Item;
 public class WildStackerIntegration implements StackerIntegration {
 
     @Override
-    public int getAmount(Item item) {
+    public long getAmount(Item item) {
         StackedItem stackedItem = WildStackerAPI.getStackedItem(item);
         return stackedItem == null ? item.getItemStack().getAmount() : stackedItem.getStackAmount();
     }
 
     @Override
-    public void setAmount(Item item, int amount) {
+    public void setAmount(Item item, long amount) {
         StackedItem stackedItem = WildStackerAPI.getStackedItem(item);
 
         if (stackedItem != null) {
-            stackedItem.setStackAmount(amount, true);
+            stackedItem.setStackAmount((int) amount, true);
         } else {
-            item.getItemStack().setAmount(amount);
+            item.getItemStack().setAmount((int) amount);
         }
     }
 }

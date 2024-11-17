@@ -64,8 +64,8 @@ public class ChestListener implements Listener {
         ChestType chestType = ChestTypes.valueOf(type);
         if (chestType == null) return;
         ChestConfig config = chestType.getConfig();
-        Long itemSold = meta.getPersistentDataContainer().get(Keys.ITEMS_SOLD, PersistentDataType.LONG);
-        Double moneyMade = meta.getPersistentDataContainer().get(Keys.MONEY_MADE, PersistentDataType.DOUBLE);
+        String itemSold = meta.getPersistentDataContainer().get(Keys.ITEMS_SOLD, PersistentDataType.STRING);
+        String moneyMade = meta.getPersistentDataContainer().get(Keys.MONEY_MADE, PersistentDataType.STRING);
         if (itemSold == null || moneyMade == null) return;
         Player player = event.getPlayer();
         int maxAmount = PermissionUtils.getChestLimit(player);

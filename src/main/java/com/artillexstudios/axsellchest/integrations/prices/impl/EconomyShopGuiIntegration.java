@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 public class EconomyShopGuiIntegration implements PricesIntegration {
 
     @Override
-    public double getPrice(ItemStack itemStack, int amount) {
+    public double getPrice(ItemStack itemStack, long amount) {
         ShopItem item = EconomyShopGUIHook.getShopItem(itemStack);
         //noinspection ConstantValue
         return item == null ? 0 : EconomyShopGUIHook.getItemSellPrice(item, itemStack) / itemStack.getAmount() * amount;

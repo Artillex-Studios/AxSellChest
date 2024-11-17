@@ -13,7 +13,7 @@ import java.util.Locale;
 
 public interface PricesIntegration extends Integration {
 
-    double getPrice(ItemStack itemStack, int amount);
+    double getPrice(ItemStack itemStack, long amount);
 
     Companion COMPANION = new Companion();
 

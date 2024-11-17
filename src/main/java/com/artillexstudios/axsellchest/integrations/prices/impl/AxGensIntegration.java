@@ -11,7 +11,7 @@ public class AxGensIntegration implements PricesIntegration {
     private Object shopPrices;
 
     @Override
-    public double getPrice(ItemStack itemStack, int amount) {
+    public double getPrice(ItemStack itemStack, long amount) {
         try {
             return ((Double) getPriceMethod.invoke(shopPrices, itemStack)) / itemStack.getAmount() * amount;
         } catch (IllegalAccessException | InvocationTargetException e) {

@@ -3,10 +3,14 @@ package com.artillexstudios.axsellchest.chests;
 import com.artillexstudios.axapi.utils.ItemBuilder;
 import com.artillexstudios.axsellchest.config.impl.ChestConfig;
 import com.artillexstudios.axsellchest.utils.Keys;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.io.File;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 public class ChestType {
     private final ChestConfig config;
@@ -31,12 +35,15 @@ public class ChestType {
         return name;
     }
 
-    public ItemStack getItem(long itemsSold, double moneyMade) {
-        return new ItemBuilder(config.ITEM_SECTION)
-                .storePersistentData(Keys.CHEST_TYPE, PersistentDataType.STRING, this.getName())
-                .storePersistentData(Keys.ITEMS_SOLD, PersistentDataType.LONG, itemsSold)
-                .storePersistentData(Keys.MONEY_MADE, PersistentDataType.DOUBLE, moneyMade)
+    public ItemStack getItem(BigInteger itemsSold, BigDecimal moneyMade) {
+        ItemStack itemStack = new ItemBuilder(config.ITEM_SECTION, Placeholder.parsed("money_made", Chest.formatter.format(moneyMade)), Placeholder.parsed("items_sold", String.valueOf(itemsSold)))
                 .get();
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.getPersistentDataContainer().set(Keys.CHEST_TYPE, PersistentDataType.STRING, this.getName());
+        meta.getPersistentDataContainer().set(Keys.ITEMS_SOLD, PersistentDataType.STRING, itemsSold.toString());
+        meta.getPersistentDataContainer().set(Keys.MONEY_MADE, PersistentDataType.STRING, moneyMade.toString());
+        itemStack.setItemMeta(meta);
+        return itemStack;
     }
 
     public void reload() {

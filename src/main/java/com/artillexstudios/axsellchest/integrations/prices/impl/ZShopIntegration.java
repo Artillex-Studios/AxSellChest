@@ -13,9 +13,9 @@ public class ZShopIntegration implements PricesIntegration {
     private ShopManager shopManager;
 
     @Override
-    public double getPrice(ItemStack itemStack, int amount) {
+    public double getPrice(ItemStack itemStack, long amount) {
         Optional<ItemButton> button = shopManager.getItemButton(itemStack.getType());
-        return button.map(itemButton -> itemButton.getSellPrice(amount)).orElse(0.0);
+        return button.map(itemButton -> itemButton.getSellPrice((int) amount)).orElse(0.0);
     }
 
     @Override

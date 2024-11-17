@@ -9,19 +9,19 @@ public class RoseStackerIntegration implements StackerIntegration {
     private RoseStackerAPI api;
 
     @Override
-    public int getAmount(Item item) {
+    public long getAmount(Item item) {
         StackedItem stackedItem = api.getStackedItem(item);
         return stackedItem == null ? item.getItemStack().getAmount() : stackedItem.getStackSize();
     }
 
     @Override
-    public void setAmount(Item item, int amount) {
+    public void setAmount(Item item, long amount) {
         StackedItem stackedItem = api.getStackedItem(item);
 
         if (stackedItem != null) {
-            stackedItem.setStackSize(amount);
+            stackedItem.setStackSize((int) amount);
         } else {
-            item.getItemStack().setAmount(amount);
+            item.getItemStack().setAmount((int) amount);
         }
     }
 

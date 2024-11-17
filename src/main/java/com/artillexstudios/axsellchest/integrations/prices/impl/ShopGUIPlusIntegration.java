@@ -7,7 +7,7 @@ import org.bukkit.inventory.ItemStack;
 public class ShopGUIPlusIntegration implements PricesIntegration {
 
     @Override
-    public double getPrice(ItemStack itemStack, int amount) {
+    public double getPrice(ItemStack itemStack, long amount) {
         double price = ShopGuiPlusApi.getItemStackPriceSell(itemStack) / itemStack.getAmount();
         return price == -1 ? 0 : price * amount;
     }

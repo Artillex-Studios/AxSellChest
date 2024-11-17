@@ -2,9 +2,11 @@ package com.artillexstudios.axsellchest.integrations.stacker;
 
 import com.artillexstudios.axsellchest.config.impl.Config;
 import com.artillexstudios.axsellchest.integrations.Integration;
+import com.artillexstudios.axsellchest.integrations.stacker.impl.AxStackerIntegration;
 import com.artillexstudios.axsellchest.integrations.stacker.impl.DefaultStackerIntegration;
 import com.artillexstudios.axsellchest.integrations.stacker.impl.RoseStackerIntegration;
 import com.artillexstudios.axsellchest.integrations.stacker.impl.WildStackerIntegration;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Item;
 
@@ -12,9 +14,9 @@ import java.util.Locale;
 
 public interface StackerIntegration extends Integration {
 
-    int getAmount(Item item);
+    long getAmount(Item item);
 
-    void setAmount(Item item, int amount);
+    void setAmount(Item item, long amount);
 
     Companion COMPANION = new Companion();
 
@@ -37,6 +39,13 @@ public interface StackerIntegration extends Integration {
                 case "wildstacker" -> {
                     if (Bukkit.getPluginManager().getPlugin("WildStacker") != null) {
                         integration = new WildStackerIntegration();
+                    } else {
+                        integration = new DefaultStackerIntegration();
+                    }
+                }
+                case "axstacker" -> {
+                    if (Bukkit.getPluginManager().getPlugin("AxStacker") != null) {
+                        integration = new AxStackerIntegration();
                     } else {
                         integration = new DefaultStackerIntegration();
                     }

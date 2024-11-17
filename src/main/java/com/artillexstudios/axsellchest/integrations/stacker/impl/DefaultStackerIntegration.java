@@ -6,12 +6,12 @@ import org.bukkit.entity.Item;
 public class DefaultStackerIntegration implements StackerIntegration {
 
     @Override
-    public int getAmount(Item item) {
+    public long getAmount(Item item) {
         return item.getItemStack().getAmount();
     }
 
     @Override
-    public void setAmount(Item item, int amount) {
-        item.getItemStack().setAmount(amount);
+    public void setAmount(Item item, long amount) {
+        item.getItemStack().setAmount((int) amount);
     }
 }

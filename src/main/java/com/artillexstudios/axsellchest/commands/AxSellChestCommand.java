@@ -17,6 +17,8 @@ import revxrsal.commands.annotation.DefaultFor;
 import revxrsal.commands.annotation.Subcommand;
 import revxrsal.commands.bukkit.annotation.CommandPermission;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 
 @Command({"axsellchest", "sellchest", "axsc"})
@@ -25,7 +27,7 @@ public class AxSellChestCommand {
     @Subcommand("give")
     @CommandPermission("axsellchest.command.give")
     public void give(CommandSender sender, Player player, ChestType chestType, @Default("1") int amount) {
-        player.getInventory().addItem(new ItemBuilder(chestType.getItem(0, 0)).amount(amount).get());
+        player.getInventory().addItem(new ItemBuilder(chestType.getItem(BigInteger.ZERO, BigDecimal.ZERO)).amount(amount).get());
         sender.sendMessage(StringUtils.formatToString(Messages.PREFIX + Messages.GIVE_SUCCESS, Placeholder.parsed("amount", String.valueOf(amount)), Placeholder.parsed("player", player.getName()), Placeholder.parsed("type", chestType.getName())));
         player.sendMessage(StringUtils.formatToString(Messages.PREFIX + Messages.RECEIVE_SUCCESS, Placeholder.parsed("amount", String.valueOf(amount)), Placeholder.parsed("type", chestType.getName())));
     }
@@ -73,7 +75,7 @@ public class AxSellChestCommand {
     }
 
     @DefaultFor({"~", "~ help"})
-    @CommandPermission("axmines.command.help")
+    @CommandPermission("axsellchest.command.help")
     public void help(CommandSender sender) {
         for (String s : Messages.HELP) {
             sender.sendMessage(StringUtils.formatToString(s));

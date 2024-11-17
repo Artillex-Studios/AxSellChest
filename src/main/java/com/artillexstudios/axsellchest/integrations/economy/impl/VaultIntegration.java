@@ -16,6 +16,7 @@ public class VaultIntegration implements EconomyIntegration {
 
     @Override
     public void give(OfflinePlayer player, double amount) {
+        System.out.println("deposit");
         economy.depositPlayer(player, amount);
     }
 

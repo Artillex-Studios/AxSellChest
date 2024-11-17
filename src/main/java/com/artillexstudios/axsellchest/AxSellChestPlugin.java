@@ -1,6 +1,7 @@
 package com.artillexstudios.axsellchest;
 
 import com.artillexstudios.axapi.AxPlugin;
+import com.artillexstudios.axapi.libs.libby.BukkitLibraryManager;
 import com.artillexstudios.axapi.utils.FeatureFlags;
 import com.artillexstudios.axapi.utils.Version;
 import com.artillexstudios.axsellchest.chests.Chest;
@@ -22,7 +23,6 @@ import com.artillexstudios.axsellchest.listeners.ChestListener;
 import com.artillexstudios.axsellchest.listeners.ChunkListener;
 import com.artillexstudios.axsellchest.listeners.WorldListener;
 import com.artillexstudios.axsellchest.utils.Keys;
-import net.byteflux.libby.BukkitLibraryManager;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -47,23 +47,26 @@ public class AxSellChestPlugin extends AxPlugin {
 
     @Override
     public void load() {
-        BukkitLibraryManager manager = new BukkitLibraryManager(this);
-        manager.addJitPack();
-        manager.addMavenCentral();
-
-        for (Libraries value : Libraries.values()) {
-            manager.loadLibrary(value.getLibrary());
-        }
+//        BukkitLibraryManager manager = new BukkitLibraryManager(this);
+//        manager.addJitPack();
+//        manager.addMavenCentral();
+//
+//        for (Libraries value : Libraries.values()) {
+//            manager.loadLibrary(value.getLibrary());
+//        }
     }
 
     @Override
     public void updateFlags() {
         FeatureFlags.PACKET_ENTITY_TRACKER_ENABLED.set(true);
         FeatureFlags.HOLOGRAM_UPDATE_TICKS.set(20L);
+        System.out.println("PACKET ENTITY: " + FeatureFlags.PACKET_ENTITY_TRACKER_ENABLED.get());
+        FeatureFlags.USE_LEGACY_HEX_FORMATTER.set(true);
     }
 
     @Override
     public void enable() {
+        FeatureFlags.PACKET_ENTITY_TRACKER_ENABLED.set(true);
         if (Version.getServerVersion().isOlderThan(Version.v1_18)) {
             LOGGER.error("Your server version is not supported! Disabling!");
             Bukkit.getPluginManager().disablePlugin(this);
@@ -73,11 +76,13 @@ public class AxSellChestPlugin extends AxPlugin {
         new Metrics(this, 21268);
         
         INSTANCE = this;
+        FeatureFlags.PACKET_ENTITY_TRACKER_ENABLED.set(true);
         this.dataHandler = new H2DataHandler();
         this.dataHandler.setup();
 
         loadCommand();
         reload();
+        FeatureFlags.PACKET_ENTITY_TRACKER_ENABLED.set(true);
 
         // Retroactively load the chests in worlds that have already loaded
         List<World> worlds = Bukkit.getWorlds();
@@ -91,6 +96,7 @@ public class AxSellChestPlugin extends AxPlugin {
             }
         });
 
+        FeatureFlags.PACKET_ENTITY_TRACKER_ENABLED.set(true);
         Bukkit.getPluginManager().registerEvents(new ChunkListener(), this);
         Bukkit.getPluginManager().registerEvents(new ChestListener(), this);
         Bukkit.getPluginManager().registerEvents(new WorldListener(), this);
